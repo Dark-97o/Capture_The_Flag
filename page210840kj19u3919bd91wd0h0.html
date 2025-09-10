@@ -1,0 +1,1425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACM CTF Challenge - Random Facts</title>
+    <style>
+        /* Main reset styles - pretty standard stuff */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            /* Changed to green theme gradient */
+            background: linear-gradient(135deg, #0d4f3c 0%, #1a7a5c 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated background with floating elements */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        /* Random comment: Why do we call it floating when it's clearly just CSS transforms? */
+        .floating-shapes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .shape {
+            position: absolute;
+            background: rgba(34, 197, 94, 0.1); /* Green theme */
+            border-radius: 50%;
+            animation: float 15s infinite linear;
+        }
+
+        .shape:nth-child(1) { 
+            width: 80px; height: 80px; 
+            top: 20%; left: 10%;
+            animation-delay: 0s;
+        }
+        .shape:nth-child(2) { 
+            width: 60px; height: 60px; 
+            top: 60%; left: 85%;
+            animation-delay: -5s;
+        }
+        .shape:nth-child(3) { 
+            width: 120px; height: 120px; 
+            top: 80%; left: 20%;
+            animation-delay: -10s;
+        }
+        /* TODO: Add more shapes for better visual appeal Secret Key Part 1: https://ctf-acmuemj.netlify.app/page3op0932jd */
+        .shape:nth-child(4) { 
+            width: 40px; height: 40px; 
+            top: 30%; left: 70%;
+            animation-delay: -15s;
+        }
+        .shape:nth-child(5) { 
+            width: 90px; height: 90px; 
+            top: 10%; left: 50%;
+            animation-delay: -7s;
+        }
+
+        @keyframes float {
+            0% { 
+                transform: translateY(0px) translateX(0px) rotate(0deg); 
+                opacity: 0.3; 
+            }
+            33% { 
+                transform: translateY(-30px) translateX(20px) rotate(120deg); 
+                opacity: 0.6; 
+            }
+            66% { 
+                transform: translateY(-60px) translateX(-10px) rotate(240deg); 
+                opacity: 0.4; 
+            }
+            100% { 
+                transform: translateY(0px) translateX(0px) rotate(360deg); 
+                opacity: 0.3; 
+            }
+        }
+
+        /* Navigation Bar with glassmorphism effect */
+        .navbar {
+            background: rgba(34, 197, 94, 0.15); /* Green theme */
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(34, 197, 94, 0.2);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* ACM logo with green gradient */
+        .acm-logo {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(45deg, #22c55e, #16a34a); /* Green gradient */
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+        }
+
+        .logo-text {
+            font-size: 1.4em;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* Input styling - keeping it minimal */
+        .url-input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 25px;
+            padding: 10px 15px;
+            color: #ffffff;
+            font-family: inherit;
+            width: 300px;
+            transition: all 0.3s ease;
+        }
+
+        .url-input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(34, 197, 94, 0.5);
+        }
+
+        .url-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .nav-btn {
+            background: linear-gradient(45deg, #22c55e, #16a34a); /* Green gradient */
+            border: none;
+            color: #ffffff;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(34, 197, 94, 0.4);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 60px 0;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+            background: linear-gradient(45deg, #22c55e, #16a34a); /* Green gradient */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.3em;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 30px;
+        }
+
+        .challenge-info {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 40px;
+            backdrop-filter: blur(10px);
+        }
+
+        .challenge-info h3 {
+            color: #ffffff;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        /* Grid layout for our cards - now supporting 12 cards */
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .panel {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(15px);
+            transition: all 0.3s ease;
+        }
+
+        .panel:hover {
+            background: rgba(34, 197, 94, 0.15);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .panel h2 {
+            color: #ffffff;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+        }
+
+        .fact-display {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #22c55e; /* Green accent */
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #22c55e, #16a34a); /* Green gradient */
+            border: none;
+            color: #ffffff;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 8px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(34, 197, 94, 0.4);
+        }
+
+        /* Data stream component - looks techy */
+        .data-stream {
+            height: 220px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            font-family: 'Courier New', monospace;
+        }
+
+        .terminal {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .prompt {
+            color: #22c55e; /* Green prompt */
+        }
+
+        .output {
+            color: rgba(255, 255, 255, 0.9);
+            margin: 8px 0;
+        }
+
+        .secret-section {
+            margin-top: 50px;
+            text-align: center;
+        }
+
+        .hint {
+            color: #fcd34d; /* Keeping hints gold for contrast */
+            font-style: italic;
+            margin: 15px 0;
+        }
+
+        /* Statistics display */
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            background: rgba(34, 197, 94, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 25px 0;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            color: #22c55e; /* Green stats */
+            font-weight: bold;
+        }
+
+        .progress-bar {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            height: 10px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #22c55e, #16a34a); /* Green progress */
+            height: 100%;
+            border-radius: 10px;
+            transition: width 2s ease;
+        }
+
+        .network-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .network-node {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .network-node:hover {
+            background: rgba(34, 197, 94, 0.2);
+            transform: scale(1.05);
+        }
+
+        /* Status indicators for system monitoring */
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        .status-online { background: #22c55e; } /* Green for online */
+        .status-warning { background: #fcd34d; } /* Yellow for warning */
+        .status-error { background: #ef4444; } /* Red for error */
+
+        /* Custom scrollbar with green theme */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(45deg, #22c55e, #16a34a); /* Green scrollbar */
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(45deg, #16a34a, #22c55e);
+        }
+
+        /* Responsive design for mobile devices */
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .url-input {
+                width: 250px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated background with floating shapes -->
+    <div class="animated-bg">
+        <div class="floating-shapes">
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+        </div>
+    </div>
+
+    <!-- Top navigation bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <div class="acm-logo">ACM</div>
+                <span class="logo-text">Cyber Challenge</span>
+            </div>
+            <div class="nav-controls">
+                <input type="url" class="url-input" id="urlInput" placeholder="Enter website URL...">
+                <button class="nav-btn" onclick="navigateToUrl()">Go</button>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <header class="header">
+            <h1>ACM CTF CYBER CHALLENGE</h1>
+            <p class="subtitle">Advanced Cybersecurity Training & Random Data Analysis</p>
+            <div class="challenge-info">
+                <h3>Mission Briefing</h3>
+                <!-- Comment: This briefing sets the stage for our CTF challenge -->
+                <p>Welcome, cyber operative! Your mission is to infiltrate this data analysis system and extract the hidden flag. Use your skills in web reconnaissance, source code analysis, and pattern recognition. The flag is distributed across multiple locations - piece it together to complete your mission.</p>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 15%;"></div>
+                </div>
+                <p><strong>Progress:</strong> <span id="progressText">Mission Started - Begin Investigation</span></p>
+            </div>
+        </header>
+
+        <div class="dashboard">
+            <!-- Card 1: Quantum Facts Generator -->
+            <div class="panel">
+                <h2>Quantum Facts Generator</h2>
+                <div class="fact-display" id="factDisplay">
+                    <strong>System Ready:</strong> Click below to access the quantum fact database. Each fact contains encrypted metadata that may reveal patterns...
+                </div>
+                <button class="btn" onclick="generateFact()">Generate Quantum Fact</button>
+                <button class="btn" onclick="generateMultipleFacts()">Batch Generate (5x)</button>
+                <button class="btn" onclick="generateSecretFact()">Access Classified Facts</button>
+                
+                <div class="network-grid">
+                    <div class="network-node">
+                        <span class="status-indicator status-online"></span>Database: Online
+                    </div>
+                    <div class="network-node">
+                        <span class="status-indicator status-warning"></span>Encryption: Active
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2: Advanced Analytics Hub -->
+            <div class="panel">
+                <h2>Advanced Analytics Hub</h2>
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="factCount">0</div>
+                        <div>Facts Analyzed</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="dataPoints">13337</div>
+                        <div>Data Points</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="secretsFound">?</div>
+                        <div>Secrets Discovered</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="threatLevel">LOW</div>
+                        <div>Threat Level</div>
+                    </div>
+                </div>
+                <!-- Hidden comment: Analytics are the key to understanding patterns -->
+                <button class="btn" onclick="analyzeData()">Deep Analysis</button>
+                <button class="btn" onclick="scanVulnerabilities()">Security Scan</button>
+                <button class="btn" onclick="hackTheSystem()">Initiate Hack</button>
+            </div>
+
+            <!-- Card 3: Command Center -->
+            <div class="panel">
+                <h2>Command Center</h2>
+                <div class="terminal">
+                    <div class="prompt">root@acm-ctf-server:~$ systemctl status quantum-facts</div>
+                    <div class="output" id="terminalOutput">
+                        ● quantum-facts.service - Quantum Fact Analysis System<br>
+                        &nbsp;&nbsp;&nbsp;Active: active (running) since 2025-09-09 14:30:15 UTC<br>
+                        &nbsp;&nbsp;&nbsp;Main PID: 1337 (quantum-engine)<br>
+                        &nbsp;&nbsp;&nbsp;Memory: 256.7M<br>
+                        &nbsp;&nbsp;&nbsp;CGroup: /system.slice/quantum-facts.service<br>
+                        <br>
+                        <span class="hint">HINT: The truth lies hidden in plain sight...</span>
+                    </div>
+                </div>
+                <button class="btn" onclick="runSystemCheck()">System Diagnostics</button>
+                <button class="btn" onclick="accessLogs()">Access Logs</button>
+                <button class="btn" onclick="emergencyProtocol()">Emergency Protocol</button>
+            </div>
+
+            <!-- Card 4: Neural Network Stream -->
+            <div class="panel">
+                <h2>Neural Network Stream</h2>
+                <div class="data-stream" id="dataStream">
+                    [SYSTEM BOOT] Initializing neural network...<br>
+                    [NET CONN] Establishing secure connection to fact database...<br>
+                    [SECURITY] Enabling quantum encryption protocols...<br>
+                    [AI CORE] Loading machine learning models...<br>
+                    [STATUS] System ready for data processing...<br>
+                </div>
+                <button class="btn" onclick="clearStream()">Clear Stream</button>
+                <button class="btn" onclick="startStream()">Auto-Stream</button>
+                <button class="btn" onclick="injectCode()">Code Injection</button>
+                
+                <div class="network-grid">
+                    <div class="network-node">
+                        <span class="status-indicator status-online"></span>AI Core: Active
+                    </div>
+                    <div class="network-node">
+                        <span class="status-indicator status-error"></span>Firewall: Breached
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 5: Cryptographic Vault -->
+            <div class="panel">
+                <h2>Cryptographic Vault</h2>
+                <div class="terminal">
+                    <div class="prompt">crypto@vault:~$ ls -la /encrypted/</div>
+                    <div class="output">
+                        total 42<br>
+                        -rw-r----- 1 root crypto 1337 Sep 09 14:30 flag_part1.enc<br>
+                        -rw-r----- 1 root crypto 2048 Sep 09 14:31 secrets.db<br>
+                        -rw-r----- 1 root crypto 4096 Sep 09 14:32 quantum_key.pem<br>
+                        <span class="hint">Some files require special access...</span>
+                    </div>
+                </div>
+                <button class="btn" onclick="decryptFiles()">Decrypt Files</button>
+                <button class="btn" onclick="bruteForce()">Brute Force</button>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" id="decryptProgress" style="width: 0%;"></div>
+                </div>
+                <p>Decryption Progress: <span id="decryptText">Awaiting Commands</span></p>
+            </div>
+
+            <!-- Card 6: Network Monitoring -->
+            <div class="panel">
+                <h2>Network Monitoring</h2>
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="activeConnections">247</div>
+                        <div>Active Connections</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="bandwidth">1.2GB</div>
+                        <div>Bandwidth Used</div>
+                    </div>
+                </div>
+                <div class="data-stream" id="networkStream">
+                    [MONITOR] Network traffic analysis active...<br>
+                    [SYSTEM] Suspicious packet Secret Key Part 3: ihifee209<br>
+                    [ALERT] Suspicious packet detected from 192.168.1.100<br>
+                    [SCAN] Port scanning attempt blocked<br>
+                    [FIREWALL] 15 connections filtered<br>
+                </div>
+                <button class="btn" onclick="startNetworkScan()">Network Scan</button>
+                <button class="btn" onclick="blockTraffic()">Block Suspicious Traffic</button>
+                <!-- Random comment: Network monitoring is crucial for CTF challenges -->
+            </div>
+
+            <!-- Card 7: Blockchain Ledger -->
+            <div class="panel">
+                <h2>Blockchain Ledger</h2>
+                <div class="terminal">
+                    <div class="prompt">blockchain@ledger:~$ query latest_blocks</div>
+                    <div class="output">
+                        Block Height: 875439<br>
+                        Hash: 0x7f8a9b2c3d4e5f6789abcdef123456789<br>
+                        Transactions: 2847<br>
+                        Gas Used: 12,456,789<br>
+                        <span class="hint">Smart contracts may contain hidden messages...</span>
+                    </div>
+                </div>
+                <div class="network-grid">
+                    <div class="network-node">
+                        <span class="status-indicator status-online"></span>Mining: Active
+                    </div>
+                    <div class="network-node">
+                        <span class="status-indicator status-online"></span>Consensus: Achieved
+                    </div>
+                </div>
+                <button class="btn" onclick="mineBlock()">Mine New Block</button>
+                <button class="btn" onclick="queryContracts()">Query Smart Contracts</button>
+            </div>
+
+            <!-- Card 8: AI Assistant -->
+            <div class="panel">
+                <h2>AI Assistant Module</h2>
+                <div class="fact-display" id="aiResponse">
+                    <strong>AI Status:</strong> Ready to assist with cybersecurity analysis. Ask me about vulnerabilities, attack patterns, or system diagnostics.
+                </div>
+                <div class="network-grid">
+                    <div class="network-node">
+                        <span class="status-indicator status-online"></span>Natural Language Processing
+                    </div>
+                    <div class="network-node">
+                        <span class="status-indicator status-warning"></span>Learning Mode: Restricted
+                    </div>
+                </div>
+                <button class="btn" onclick="askAI()">Query AI Assistant</button>
+                <button class="btn" onclick="trainModel()">Train New Model</button>
+                <!-- Hidden Easter egg: AI models learn from your interactions -->
+            </div>
+
+            <!-- Card 9: Satellite Communications -->
+            <div class="panel">
+                <h2>Satellite Communications</h2>
+                <div class="data-stream" id="satelliteStream">
+                    [SAT CONN] Connecting to CYBERSAT-7...<br>
+                    [UPLINK] Signal strength: 89%<br>
+                    [DECRYPT] Receiving encrypted transmission...<br>
+                    [DATA] Coordinates: 40.7128° N, 74.0060° W<br>
+                    [STATUS] Communication established<br>
+                </div>
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="signalStrength">89%</div>
+                        <div>Signal Strength</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="latency">45ms</div>
+                        <div>Latency</div>
+                    </div>
+                </div>
+                <button class="btn" onclick="establishUplink()">Establish Uplink</button>
+                <button class="btn" onclick="interceptSignals()">Intercept Signals</button>
+            </div>
+
+            <!-- Card 10: Quantum Computer Interface -->
+            <div class="panel">
+                <h2>Quantum Computer Interface</h2>
+                <div class="terminal">
+                    <div class="prompt">quantum@qpu:~$ qiskit-status</div>
+                    <div class="output" id="quantumOutput">
+                        Quantum Processing Unit: ONLINE<br>
+                        Qubits Available: 127<br>
+                        Quantum Volume: 512<br>
+                        Error Rate: 0.001%<br>
+                        <span class="hint">Quantum supremacy achieved - infinite possibilities...</span>
+                    </div>
+                </div>
+                <button class="btn" onclick="runQuantumAlgorithm()">Run Shor's Algorithm</button>
+                <button class="btn" onclick="simulateQuantum()">Quantum Simulation</button>
+                <button class="btn" onclick="breakEncryption()">Break RSA Encryption</button>
+            </div>
+
+            <!-- Card 11: Biometric Scanner -->
+            <div class="panel">
+                <h2>Biometric Scanner</h2>
+                <div class="fact-display" id="biometricDisplay">
+                    <strong>Scanner Status:</strong> Ready for biometric authentication. Place finger on sensor or look into retinal scanner.
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="scanProgress" style="width: 0%;"></div>
+                </div>
+                <p>Scan Progress: <span id="scanText">Awaiting Input</span></p>
+                <div class="network-grid">
+                    <div class="network-node">
+                        <span class="status-indicator status-warning"></span>Fingerprint: Not Detected
+                    </div>
+                    <div class="network-node">
+                        <span class="status-indicator status-error"></span>Retinal: Access Denied
+                    </div>
+                </div>
+                <button class="btn" onclick="scanFingerprint()">Scan Fingerprint</button>
+                <button class="btn" onclick="scanRetina()">Retinal Scan</button>
+                <!-- TODO: Implement voice recognition for triple authentication -->
+            </div>
+
+            <!-- Card 12: Cyber Warfare Center -->
+            <div class="panel">
+                <h2>Cyber Warfare Center</h2>
+                <div class="data-stream" id="warfareStream">
+                    [INTEL] Monitoring global threat intelligence...<br>
+                    [ALERT] APT group activity detected<br>
+                    [DEFENSE] Activating countermeasures<br>
+                    [OFFENSE] Preparing response protocols<br>
+                    [STATUS] DefCon level: 3<br>
+                </div>
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="threatsBlocked">1,247</div>
+                        <div>Threats Blocked</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="attacksRepelled">89</div>
+                        <div>Attacks Repelled</div>
+                    </div>
+                </div>
+                <button class="btn" onclick="launchCounterAttack()">Launch Counter-Attack</button>
+                <button class="btn" onclick="activateDefenses()">Activate All Defenses</button>
+                <button class="btn" onclick="gatherIntel()">Gather Intelligence</button>
+            </div>
+        </div>
+
+        <div class="secret-section">
+            <h2>ULTIMATE CHALLENGE</h2>
+            <p class="hint">Your mission: Locate and assemble the distributed flag!</p>
+            <p>Use advanced reconnaissance techniques including:</p>
+            <ul style="text-align: left; max-width: 600px; margin: 20px auto;">
+                <li>Source Code Analysis</li>
+                <li>Comment Mining</li>
+                <li>Console Investigation</li>
+                <li>Function Reverse Engineering</li>
+                <li>Pattern Recognition</li>
+            </ul>
+            <div class="terminal">
+                <div class="prompt">hacker@challenge:~$ grep -r "flag" /var/www/html/</div>
+                <div class="output">
+                    /var/www/html/index.html:<!-- This is a decoy flag: FLAG{fake_flag_ignore_this} --><br>
+                    /var/www/html/assets/script.js: // Real flag fragments scattered in source<br>
+                    <span class="hint">Found 1 potential lead - investigate further!</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Enhanced facts database with cybersecurity themes
+        const facts = [
+            "The first computer virus was created in 1971 and was called 'The Creeper'",
+            "Quantum computers could theoretically break RSA encryption in minutes",
+            "The term 'bug' in programming comes from an actual moth found in a computer in 1947",
+            "There are over 350,000 new malware samples detected every day",
+            "The average cost of a data breach in 2024 is $4.45 million",
+            "Biometric data can be hacked - your fingerprint is not as secure as you think",
+            // Random comment: Why do hackers always wear hoodies in movies?
+            "The dark web makes up only 0.01% of the entire internet",
+            "Social engineering accounts for 98% of cyber attacks",
+            "A single line of code can contain multiple security vulnerabilities",
+            "Artificial intelligence can now generate convincing deepfake videos in real-time",
+            "The longest recorded cyber attack lasted 7 years without detection",
+            "Quantum entanglement enables theoretically unbreakable communication",
+            "Neural networks can be trained to recognize patterns in encrypted data",
+            "The first ransomware attack occurred in 1989 and used floppy disks",
+            "Machine learning algorithms can predict cyber attacks with 94% accuracy",
+            "Blockchain technology creates an immutable ledger of all transactions",
+            "Zero-day exploits can sell for over $1 million on the dark web",
+            "Steganography allows hiding secret messages inside innocent-looking images",
+            "Buffer overflow attacks remain one of the most common exploitation techniques",
+            "The human brain processes information at approximately 20 watts of power"
+        ];
+
+        let factCounter = 0;
+        let streamInterval;
+        let hackingInProgress = false;
+        
+        // Navigation function for URL input
+        function navigateToUrl() {
+            const url = document.getElementById('urlInput').value.trim();
+            if (url) {
+                let targetUrl = url;
+                if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                    targetUrl = 'https://' + url;
+                }
+                try {
+                    window.open(targetUrl, '_blank');
+                    updateDataStream(`Navigated to: ${targetUrl}`);
+                } catch (error) {
+                    updateDataStream('Error: Could not navigate to URL');
+                }
+            } else {
+                updateDataStream('Please enter a valid URL');
+            }
+        }
+
+        // Generate random facts from our database
+        function generateFact() {
+            const randomFact = facts[Math.floor(Math.random() * facts.length)];
+            document.getElementById('factDisplay').innerHTML = `<strong>Quantum Fact #${++factCounter}:</strong><br><br>${randomFact}<br><br><em>Classification: UNCLASSIFIED</em>`;
+            document.getElementById('factCount').textContent = factCounter;
+            updateDataStream(`Generated fact: "${randomFact.substring(0, 40)}..."`);
+            updateProgress();
+        }
+
+        function generateMultipleFacts() {
+            let factsList = '<strong>Quantum Facts Batch Analysis:</strong><br><br>';
+            for (let i = 0; i < 5; i++) {
+                const randomFact = facts[Math.floor(Math.random() * facts.length)];
+                factsList += `${i + 1}. ${randomFact}<br><br>`;
+                factCounter++;
+            }
+            factsList += '<em>Batch Status: COMPLETE | Security Level: GREEN</em>';
+            document.getElementById('factDisplay').innerHTML = factsList;
+            document.getElementById('factCount').textContent = factCounter;
+            updateDataStream(`Generated batch of 5 quantum facts`);
+            updateProgress();
+        }
+
+        function generateSecretFact() {
+            const secretFacts = [
+                "The ACM organization was founded in 1947 and is the world's largest computing society",
+                "Classified algorithms exist that can break most encryption in polynomial time",
+                "The NSA has quantum computers capable of breaking 2048-bit RSA encryption",
+                "There are hidden backdoors in major cryptographic implementations",
+                "Advanced persistent threats can remain undetected for decades"
+            ];
+            const secretFact = secretFacts[Math.floor(Math.random() * secretFacts.length)];
+            document.getElementById('factDisplay').innerHTML = `<strong>CLASSIFIED FACT #${++factCounter}:</strong><br><br>${secretFact}<br><br><em>Classification: TOP SECRET | Eyes Only</em>`;
+            document.getElementById('factCount').textContent = factCounter;
+            updateDataStream(`Accessed classified fact: "${secretFact.substring(0, 40)}..."`);
+            updateProgress();
+            document.getElementById('threatLevel').textContent = 'MEDIUM';
+        }
+
+        // Deep data analysis function
+        function analyzeData() {
+            const analysis = [
+                "Scanning quantum data structures...",
+                "Data integrity: 98.7%",
+                "Security protocols: ACTIVE", 
+                "Pattern recognition: 3 anomalies detected",
+                "Suspicious entries found: 1",
+                "Encryption status: Military Grade AES-256",
+                "Hidden patterns detected in metadata",
+                "ALERT: Unauthorized access attempts logged"
+            ];
+            
+            let output = "=== QUANTUM DATA ANALYSIS REPORT ===<br>";
+            analysis.forEach((item, index) => {
+                setTimeout(() => {
+                    output += `${item}<br>`;
+                    document.getElementById('terminalOutput').innerHTML = output;
+                }, index * 600);
+            });
+            
+            setTimeout(() => {
+                output += "<br><span class='hint'>Anomalous data patterns suggest hidden information in source code...</span>";
+                document.getElementById('terminalOutput').innerHTML = output;
+                document.getElementById('threatLevel').textContent = 'HIGH';
+            }, 5000);
+        }
+
+        function scanVulnerabilities() {
+            updateDataStream('Initiating comprehensive security scan...');
+            
+            const vulnerabilities = [
+                "SQL Injection: 0 instances found",
+                "XSS Vulnerabilities: 2 potential vectors",
+                "CSRF Protection: ENABLED",
+                "Code Injection: 1 suspicious function detected",
+                "Information Disclosure: Source code exposed",
+                "Authentication Bypass: Possible via developer tools"
+            ];
+            
+            vulnerabilities.forEach((vuln, index) => {
+                setTimeout(() => {
+                    updateDataStream(`${vuln}`);
+                }, index * 800);
+            });
+            
+            setTimeout(() => {
+                updateDataStream('CRITICAL: Hidden code fragments detected!');
+                document.getElementById('threatLevel').textContent = 'CRITICAL';
+            }, 6000);
+        }
+
+        // Main hacking function - the centerpiece of our CTF
+        function hackTheSystem() {
+            if (hackingInProgress) return;
+            hackingInProgress = true;
+            
+            updateDataStream('INITIATING SYSTEM COMPROMISE...');
+            document.getElementById('threatLevel').textContent = 'CRITICAL';
+            
+            const hackSteps = [
+                "Bypassing authentication protocols...",
+                "Exploiting buffer overflow vulnerability...",
+                "Establishing backdoor connection...",
+                "Extracting sensitive data...",
+                "Flag fragments located in memory...",
+                "Injecting payload into system core...",
+                "Decrypting protected files...",
+                "SYSTEM COMPROMISED - Access Granted!"
+            ];
+            
+            hackSteps.forEach((step, index) => {
+                setTimeout(() => {
+                    updateDataStream(step);
+                    if (index === hackSteps.length - 1) {
+                        setTimeout(() => {
+                            updateDataStream('Congratulations! You\'ve successfully hacked the system!');
+                            updateDataStream('Check the browser console for hidden debug information...');
+                            hackingInProgress = false;
+                        }, 1000);
+                    }
+                }, index * 1000);
+            });
+        }
+
+        function runSystemCheck() {
+            const checks = [
+                "Checking quantum processor status... OK",
+                "Verifying neural network connections... OK",
+                "Testing security protocols... WARNING",
+                "Analyzing data integrity... COMPROMISED",
+                "Scanning for unauthorized access... DETECTED",
+                "System status: UNDER ATTACK"
+            ];
+            
+            let output = "";
+            checks.forEach((check, index) => {
+                setTimeout(() => {
+                    output += `${check}<br>`;
+                    document.getElementById('terminalOutput').innerHTML = output;
+                }, index * 900);
+            });
+        }
+
+        function accessLogs() {
+            const logs = [
+                "[14:30:15] User authentication: SUCCESS",
+                "[14:31:22] Database query: SELECT * FROM facts",
+                "[14:32:45] Suspicious script execution detected",
+                "[14:33:12] Multiple failed login attempts from 192.168.1.100",
+                "[14:34:33] Admin panel access: DENIED",
+                "[14:35:44] Code injection attempt blocked",
+                "[14:36:55] Flag access attempt logged"
+            ];
+            
+            let output = "=== SYSTEM ACCESS LOGS ===<br>";
+            logs.forEach((log, index) => {
+                setTimeout(() => {
+                    output += `${log}<br>`;
+                    document.getElementById('terminalOutput').innerHTML = output;
+                }, index * 500);
+            });
+        }
+
+        function emergencyProtocol() {
+            updateDataStream('EMERGENCY PROTOCOL ACTIVATED');
+            updateDataStream('Locking down all systems...');
+            updateDataStream('Cutting external connections...');
+            updateDataStream('Enabling quantum firewall...');
+            updateDataStream('Creating system backup...');
+            updateDataStream('Encrypting sensitive data...');
+            updateDataStream('Emergency protocol complete - System secured');
+            document.getElementById('threatLevel').textContent = 'SECURED';
+        }
+
+        function clearStream() {
+            document.getElementById('dataStream').innerHTML = "Neural network stream cleared...<br>Awaiting new data input...<br>";
+        }
+
+        // Auto-streaming functionality for continuous monitoring
+        function startStream() {
+            if (streamInterval) clearInterval(streamInterval);
+            
+            const streamMessages = [
+                "Processing neural network packets...",
+                "Analyzing quantum fact patterns...",
+                "Detecting anomalies in data structure...",
+                "Monitoring user behavior patterns...",
+                "Scanning for hidden content signatures...",
+                "Evaluating security protocol integrity...",
+                "Checking data consistency metrics...",
+                "Identifying potential flag locations...",
+                "Analyzing encryption key patterns...",
+                "Monitoring network traffic anomalies..."
+            ];
+            
+            streamInterval = setInterval(() => {
+                const message = streamMessages[Math.floor(Math.random() * streamMessages.length)];
+                updateDataStream(message);
+            }, 2500);
+            
+            updateDataStream("Auto-stream protocol activated");
+        }
+
+        function injectCode() {
+            updateDataStream('Attempting code injection...');
+            updateDataStream('Locating vulnerable input vectors...');
+            updateDataStream('Crafting malicious payload...');
+            updateDataStream('Payload injected successfully!');
+            updateDataStream('Extracting hidden information...');
+            updateDataStream('HINT: Try the browser console for debug access!');
+        }
+
+        // File decryption with progress animation
+        function decryptFiles() {
+            let progress = 0;
+            const progressBar = document.getElementById('decryptProgress');
+            const progressText = document.getElementById('decryptText');
+            
+            const decryptInterval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 100) progress = 100;
+                
+                progressBar.style.width = progress + '%';
+                
+                if (progress < 25) {
+                    progressText.textContent = 'Initializing quantum decryption...';
+                } else if (progress < 50) {
+                    progressText.textContent = 'Breaking RSA encryption...';
+                } else if (progress < 75) {
+                    progressText.textContent = 'Extracting key fragments...';
+                } else if (progress < 100) {
+                    progressText.textContent = 'Reconstructing original data...';
+                } else {
+                    progressText.textContent = 'Decryption Complete! Check console for details.';
+                    clearInterval(decryptInterval);
+                    console.log('Decryption successful! Secret Key Part 2: kd3j2q9e0fo');
+                }
+            }, 300);
+        }
+
+        function bruteForce() {
+            updateDataStream('Initiating brute force attack...');
+            updateDataStream('Trying password combinations...');
+            updateDataStream('Estimated time: 47 years, 3 months, 12 days...');
+            updateDataStream('Using quantum acceleration...');
+            updateDataStream('Password cracked in 0.003 seconds!');
+            updateDataStream('Access granted to encrypted vault!');
+        }
+
+        // Network monitoring functions (Card 6)
+        function startNetworkScan() {
+            updateNetworkStream('Starting comprehensive network scan...');
+            updateNetworkStream('Scanning ports 1-65535...');
+            updateNetworkStream('Open ports found: 22, 80, 443, 8080');
+            updateNetworkStream('Vulnerable services detected: 3');
+            updateNetworkStream('Network topology mapped successfully');
+            // Hidden comment: Network scans reveal system architecture
+        }
+
+        function blockTraffic() {
+            updateNetworkStream('Analyzing suspicious traffic patterns...');
+            updateNetworkStream('Blocked 15 malicious IP addresses');
+            updateNetworkStream('Updated firewall rules');
+            updateNetworkStream('Traffic filtering activated');
+            document.getElementById('activeConnections').textContent = '189';
+        }
+
+        // Blockchain functions (Card 7)
+        function mineBlock() {
+            updateDataStream('Initializing blockchain mining process...');
+            updateDataStream('Calculating proof of work...');
+            updateDataStream('Hash rate: 15.7 TH/s');
+            updateDataStream('Block mined successfully!');
+            updateDataStream('Reward: 6.25 BTC earned');
+        }
+
+        function queryContracts() {
+            updateDataStream('Querying smart contracts...');
+            updateDataStream('Found 247 active contracts');
+            updateDataStream('Analyzing contract bytecode...');
+            updateDataStream('Potential vulnerability detected in contract 0x7f8a...');
+        
+        }
+
+        // AI Assistant functions (Card 8)
+        function askAI() {
+            const aiResponses = [
+                "Based on analysis, I detect unusual patterns in the system logs that suggest reconnaissance activity.",
+                "The network traffic shows characteristics of advanced persistent threats. Recommend immediate containment.",
+                "Cryptographic signatures indicate the presence of hidden data structures in memory.",
+                "My neural networks have identified anomalous behavioral patterns consistent with insider threats."
+            ];
+            const response = aiResponses[Math.floor(Math.random() * aiResponses.length)];
+            document.getElementById('aiResponse').innerHTML = `<strong>AI Analysis:</strong><br><br>${response}`;
+        }
+
+        function trainModel() {
+            updateDataStream('Training new AI model...');
+            updateDataStream('Processing 1.2M samples...');
+            updateDataStream('Epoch 1/100 completed');
+            updateDataStream('Accuracy: 87.3%');
+            updateDataStream('Model training in progress...');
+        }
+
+        // Satellite communication functions (Card 9)
+        function establishUplink() {
+            updateSatelliteStream('[UPLINK] Establishing connection to CYBERSAT-7...');
+            updateSatelliteStream('[AUTH] Satellite authentication successful');
+            updateSatelliteStream('[COORD] Updating orbital position data');
+            updateSatelliteStream('[DATA] Downloading classified intelligence');
+            updateSatelliteStream('[STATUS] Uplink established - Channel secure');
+            // TODO: Implement satellite encryption protocols
+        }
+
+        function interceptSignals() {
+            updateSatelliteStream('[INTERCEPT] Scanning frequency spectrum...');
+            updateSatelliteStream('[SIGNAL] Encrypted transmission detected');
+            updateSatelliteStream('[DECRYPT] Breaking military-grade encryption...');
+            updateSatelliteStream('[SUCCESS] Signal intercepted and decoded');
+            updateSatelliteStream('[INTEL] Strategic information acquired');
+        }
+
+        // Quantum computer functions (Card 10)
+        function runQuantumAlgorithm() {
+            document.getElementById('quantumOutput').innerHTML = 
+                'Running Shor\'s Algorithm...<br>' +
+                'Target: RSA-2048 bit key<br>' +
+                'Quantum gates: 12,847<br>' +
+                'Processing time: 0.003 seconds<br>' +
+                '<span class="hint">Encryption broken - quantum supremacy achieved!</span>';
+        }
+
+        function simulateQuantum() {
+            updateDataStream('Initializing quantum simulation...');
+            updateDataStream('Creating 127-qubit entangled state...');
+            updateDataStream('Running quantum circuit...');
+            updateDataStream('Measurement collapse: |101101⟩');
+            updateDataStream('Quantum simulation complete');
+        }
+
+        function breakEncryption() {
+            updateDataStream('Targeting AES-256 encryption...');
+            updateDataStream('Applying Grover\'s algorithm...');
+            updateDataStream('Quantum speedup: 2^128 → 2^64 operations');
+            updateDataStream('Encryption key recovered!');
+            updateDataStream('System access granted');
+        }
+
+        // Biometric scanner functions (Card 11)
+        function scanFingerprint() {
+            let progress = 0;
+            const progressBar = document.getElementById('scanProgress');
+            const progressText = document.getElementById('scanText');
+            
+            const scanInterval = setInterval(() => {
+                progress += Math.random() * 20;
+                if (progress > 100) progress = 100;
+                
+                progressBar.style.width = progress + '%';
+                progressText.textContent = progress < 100 ? 'Scanning fingerprint...' : 'Fingerprint rejected - Access denied';
+                
+                if (progress >= 100) {
+                    clearInterval(scanInterval);
+                }
+            }, 200);
+        }
+
+        function scanRetina() {
+            let progress = 0;
+            const progressBar = document.getElementById('scanProgress');
+            const progressText = document.getElementById('scanText');
+            
+            const scanInterval = setInterval(() => {
+                progress += Math.random() * 25;
+                if (progress > 100) progress = 100;
+                
+                progressBar.style.width = progress + '%';
+                progressText.textContent = progress < 100 ? 'Analyzing retinal pattern...' : 'Retinal scan complete - Identity verified';
+                
+                if (progress >= 100) {
+                    clearInterval(scanInterval);
+                    updateDataStream('Biometric authentication successful!');
+                }
+            }, 300);
+        }
+
+        // Cyber warfare functions (Card 12)
+        function launchCounterAttack() {
+            updateWarfareStream('[COUNTER] Launching cyber counter-offensive...');
+            updateWarfareStream('[TARGET] Enemy infrastructure identified');
+            updateWarfareStream('[PAYLOAD] Deploying advanced malware');
+            updateWarfareStream('[SUCCESS] Enemy systems compromised');
+            updateWarfareStream('[INTEL] Extracting sensitive data');
+            document.getElementById('attacksRepelled').textContent = '94';
+        }
+
+        function activateDefenses() {
+            updateWarfareStream('[DEFENSE] Activating all defensive systems...');
+            updateWarfareStream('[FIREWALL] Enhanced filtering enabled');
+            updateWarfareStream('[IDS] Intrusion detection active');
+            updateWarfareStream('[AI] Autonomous defense protocols online');
+            updateWarfareStream('[STATUS] All defenses operational');
+            document.getElementById('threatsBlocked').textContent = '1,389';
+        }
+
+        function gatherIntel() {
+            updateWarfareStream('[INTEL] Gathering threat intelligence...');
+            updateWarfareStream('[SOURCE] Dark web monitoring active');
+            updateWarfareStream('[ANALYSIS] APT group signatures identified');
+            updateWarfareStream('[PREDICTION] Next attack vector predicted');
+            updateWarfareStream('[DATABASE] Intelligence database updated');
+        }
+
+        // Helper functions for updating various streams
+        function updateDataStream(message) {
+            const stream = document.getElementById('dataStream');
+            const timestamp = new Date().toLocaleTimeString();
+            stream.innerHTML += `[${timestamp}] ${message}<br>`;
+            stream.scrollTop = stream.scrollHeight;
+        }
+
+        function updateNetworkStream(message) {
+            const stream = document.getElementById('networkStream');
+            const timestamp = new Date().toLocaleTimeString();
+            stream.innerHTML += `[${timestamp}] ${message}<br>`;
+            stream.scrollTop = stream.scrollHeight;
+        }
+
+        function updateSatelliteStream(message) {
+            const stream = document.getElementById('satelliteStream');
+            const timestamp = new Date().toLocaleTimeString();
+            stream.innerHTML += `[${timestamp}] ${message}<br>`;
+            stream.scrollTop = stream.scrollHeight;
+        }
+
+        function updateWarfareStream(message) {
+            const stream = document.getElementById('warfareStream');
+            const timestamp = new Date().toLocaleTimeString();
+            stream.innerHTML += `[${timestamp}] ${message}<br>`;
+            stream.scrollTop = stream.scrollHeight;
+        }
+
+        function updateProgress() {
+            const progress = Math.min((factCounter * 10) + 15, 85);
+            document.getElementById('progressFill').style.width = progress + '%';
+            
+            if (progress < 25) {
+                document.getElementById('progressText').textContent = 'Initial Reconnaissance';
+            } else if (progress < 50) {
+                document.getElementById('progressText').textContent = 'Data Collection Phase';
+            } else if (progress < 75) {
+                document.getElementById('progressText').textContent = 'Analysis & Pattern Recognition';
+            } else {
+                document.getElementById('progressText').textContent = 'Advanced Exploitation Phase';
+            }
+        }
+
+        // System initialization
+        updateDataStream("ACM Cyber Challenge System initialized");
+        updateDataStream("Quantum encryption protocols loaded");
+        updateDataStream("Neural network AI core online");
+        updateDataStream("Ready for cyber operative commands...");
+        
+        /* 
+         * Advanced Cybersecurity Database Configuration
+         * ==============================================
+         * Server: quantum-db.acm.internal:5432
+         * Database: neural_facts_encrypted
+         * Admin credentials: cyber_admin:Qu4ntum_K3y_2025!
+         * Encryption: AES-256-GCM with quantum key distribution
+         * Backup location: /var/secure/quantum_backups/
+         * Flag fragment 4: el1t3_h4ck3r}
+         * Debug mode: ENABLED (remove in production!)
+         * API endpoint: https://api.acm-ctf.org/v2/facts
+         * Rate limit: 1000 requests/hour per IP
+         * Security level: MAXIMUM
+         */
+        
+        // Advanced debugging functions for elite hackers
+        window.quantumDebug = function() {
+            console.log("Quantum Debug Mode Activated");
+            console.log("Searching for hidden flag fragments...");
+            console.log("Tip: Look for comments in different code sections");
+            console.log("Fragment detection algorithm running...");
+            console.log("Quantum entanglement established with flag database");
+            return "Quantum debugging enabled - check source code carefully!";
+        };
+        
+        window.neuralHack = function() {
+            console.log("Neural Network Hack Initiated");
+            console.log("Bypassing AI security protocols...");
+            console.log("Spoofing authentication tokens...");
+            console.log("Extracting neural weights and biases...");
+            console.log("Neural network successfully compromised!");
+            return "Neural hack complete! Flag fragments may be in memory...";
+        };
+        
+        // New advanced hacking function
+        window.greenHacker = function() {
+            console.log("Green Hacker Protocol Activated");
+            console.log("Advanced persistent threat detected...");
+            console.log("Initiating stealth mode...");
+            console.log("All systems green - hack successful!");
+            return "Green theme hack complete! You are truly elite!";
+        };
+        
+        // Anti-detection and advanced monitoring
+        let devToolsDetected = false;
+        let consoleAccessCount = 0;
+        
+        setInterval(() => {
+            const heightDiff = window.outerHeight - window.innerHeight;
+            const widthDiff = window.outerWidth - window.innerWidth;
+            
+            if (heightDiff > 200 || widthDiff > 200) {
+                if (!devToolsDetected) {
+                    devToolsDetected = true;
+                    updateDataStream("Advanced reconnaissance tools detected!");
+                    updateDataStream("Elite hacker behavior identified...");
+                    updateDataStream("Hidden functions unlocked in console!");
+                    console.log("Developer tools detected! Try quantumDebug(), neuralHack(), and greenHacker()");
+                }
+            } else {
+                devToolsDetected = false;
+            }
+        }, 1000);
+        
+        // Dynamic threat level and data point updates
+        setInterval(() => {
+            const randomValue = Math.floor(Math.random() * 50000);
+            document.getElementById('dataPoints').textContent = 13337 + randomValue;
+            
+            // Update other dynamic values
+            const connections = 200 + Math.floor(Math.random() * 100);
+            document.getElementById('activeConnections').textContent = connections;
+            
+            const bandwidth = (1.0 + Math.random() * 2).toFixed(1);
+            document.getElementById('bandwidth').textContent = bandwidth + 'GB';
+            
+            const signal = Math.floor(85 + Math.random() * 15);
+            document.getElementById('signalStrength').textContent = signal + '%';
+            
+            const latency = Math.floor(30 + Math.random() * 50);
+            document.getElementById('latency').textContent = latency + 'ms';
+        }, 3000);
+        
+        // Quantum encryption simulation
+        function simulateQuantumEncryption() {
+            const quantumStates = ['|0⟩', '|1⟩', '|+⟩', '|-⟩'];
+            const entangledPairs = [];
+            
+            for (let i = 0; i < 8; i++) {
+                const state1 = quantumStates[Math.floor(Math.random() * quantumStates.length)];
+                const state2 = quantumStates[Math.floor(Math.random() * quantumStates.length)];
+                entangledPairs.push(`${state1}⊗${state2}`);
+            }
+            
+            return entangledPairs;
+        }
+        
+        // Advanced keylogger detection (ethical hacking simulation)
+        document.addEventListener('keydown', function(event) {
+            if (event.ctrlKey && event.shiftKey && event.code === 'KeyI') {
+                updateDataStream('Advanced key combination detected!');
+                updateDataStream('Ethical hacking skills confirmed...');
+            }
+            // Random comment: Konami code would be fun to implement here
+        });
+        
+        // Final flag assembly function (hidden in complex calculation)
+        function calculateQuantumEntropy() {
+            // This function appears to calculate quantum entropy
+            const entropy = Math.random() * Math.PI;
+            const quantumNoise = simulateQuantumEntropy();
+            const complexCalculation = entropy * quantumNoise.length;
+            
+            // Hidden easter egg for persistent hackers
+            if (complexCalculation > 20) {
+                console.log("Quantum calculation complete!");
+                console.log("You've demonstrated exceptional persistence!");
+                console.log("All flag fragments should now be discoverable...");
+            }
+            
+            return complexCalculation;
+        }
+        
+        // Auto-execute quantum calculations
+        setInterval(calculateQuantumEntropy, 10000);
+        
+        // Initialize advanced systems
+        console.log("ACM CTF Advanced Systems Online");
+        console.log("Hint: Use quantumDebug(), neuralHack(), and greenHacker() functions");
+        console.log("Master hackers check ALL code sections...");
+        console.log("Green theme activated - elite mode engaged!");
+    </script>
+</body>
+</html>
