@@ -62,7 +62,7 @@
             top: 80%; left: 20%;
             animation-delay: -10s;
         }
-        /* TODO: Add more shapes for better visual appeal Secret Key Part 1: https://ctf-acmuemj.netlify.app/page3op0932jd */
+        /* TODO: Add more shapes for better visual appeal */
         .shape:nth-child(4) { 
             width: 40px; height: 40px; 
             top: 30%; left: 70%;
@@ -613,7 +613,7 @@
                 </div>
                 <div class="data-stream" id="networkStream">
                     [MONITOR] Network traffic analysis active...<br>
-                    [SYSTEM] Suspicious packet Secret Key Part 3: ihifee209<br>
+                    [SYSTEM] Suspicious packet<br>
                     [ALERT] Suspicious packet detected from 192.168.1.100<br>
                     [SCAN] Port scanning attempt blocked<br>
                     [FIREWALL] 15 connections filtered<br>
@@ -1064,7 +1064,7 @@
                 } else {
                     progressText.textContent = 'Decryption Complete! Check console for details.';
                     clearInterval(decryptInterval);
-                    console.log('Decryption successful! Secret Key Part 2: kd3j2q9e0fo');
+                    console.log('Decryption successful!');
                 }
             }, 300);
         }

@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACM CTF Challenge - Data Insights</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #4f3c0d 0%, #7a5c1a 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .floating-shapes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .shape {
+            position: absolute;
+            background: rgba(197, 161, 34, 0.1);
+            border-radius: 50%;
+            animation: float 20s infinite linear;
+        }
+
+        /* Reduced number of shapes to 5 */
+        .shape:nth-child(1) { width: 85px; height: 85px; top: 25%; left: 15%; animation-delay: 0s; }
+        .shape:nth-child(2) { width: 65px; height: 65px; top: 55%; left: 80%; animation-delay: -6s; }
+        .shape:nth-child(3) { width: 125px; height: 125px; top: 75%; left: 25%; animation-delay: -12s; }
+        .shape:nth-child(4) { width: 45px; height: 45px; top: 35%; left: 65%; animation-delay: -18s; }
+        .shape:nth-child(5) { width: 95px; height: 95px; top: 15%; left: 45%; animation-delay: -9s; }
+
+        @keyframes float {
+            0% { transform: translateY(0px); opacity: 0.3; }
+            50% { transform: translateY(-30px); opacity: 0.5; }
+            100% { transform: translateY(0px); opacity: 0.3; }
+        }
+
+        .navbar {
+            background: rgba(197, 161, 34, 0.15);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(197, 161, 34, 0.2);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .acm-logo {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(45deg, #eab308, #ca8a04);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(197, 161, 34, 0.3);
+        }
+
+        .logo-text {
+            font-size: 1.4em;
+            font-weight: 600;
+        }
+
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .url-input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(197, 161, 34, 0.3);
+            border-radius: 25px;
+            padding: 10px 15px;
+            color: #ffffff;
+            font-family: inherit;
+            width: 300px;
+            transition: all 0.3s ease;
+        }
+
+        .url-input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(197, 161, 34, 0.5);
+        }
+
+        .url-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .nav-btn {
+            background: linear-gradient(45deg, #eab308, #ca8a04);
+            border: none;
+            color: #ffffff;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(197, 161, 34, 0.4);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 60px 0;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+            background: linear-gradient(45deg, #eab308, #ca8a04);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.3em;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 30px;
+        }
+
+        .challenge-info {
+            background: rgba(197, 161, 34, 0.1);
+            border: 1px solid rgba(197, 161, 34, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 40px;
+            backdrop-filter: blur(10px);
+        }
+
+        .challenge-info h3 {
+            color: #ffffff;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .panel {
+            background: rgba(197, 161, 34, 0.1);
+            border: 1px solid rgba(197, 161, 34, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .panel:hover {
+            background: rgba(197, 161, 34, 0.15);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .panel h2 {
+            color: #ffffff;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+        }
+
+        .fact-display {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #eab308;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #eab308, #ca8a04);
+            border: none;
+            color: #ffffff;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 8px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(197, 161, 34, 0.4);
+        }
+
+        .data-stream {
+            height: 220px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            border: 1px solid rgba(197, 161, 34, 0.2);
+            font-family: 'Courier New', monospace;
+        }
+
+        .terminal {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(197, 161, 34, 0.2);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .prompt {
+            color: #eab308;
+        }
+
+        .output {
+            color: rgba(255, 255, 255, 0.9);
+            margin: 8px 0;
+        }
+
+        .secret-section {
+            margin-top: 50px;
+            text-align: center;
+        }
+
+        .hint {
+            color: #ffffff;
+            font-style: italic;
+            margin: 15px 0;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            background: rgba(197, 161, 34, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 25px 0;
+            border: 1px solid rgba(197, 161, 34, 0.2);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            color: #eab308;
+            font-weight: bold;
+        }
+
+        .progress-bar {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            height: 10px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #eab308, #ca8a04);
+            height: 100%;
+            border-radius: 10px;
+            transition: width 1s ease;
+        }
+
+        .network-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .network-node {
+            background: rgba(197, 161, 34, 0.1);
+            border: 1px solid rgba(197, 161, 34, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .network-node:hover {
+            background: rgba(197, 161, 34, 0.2);
+            transform: scale(1.05);
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        .status-online { background: #eab308; }
+        .status-warning { background: #ffffff; }
+        .status-error { background: #ef4444; }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(45deg, #eab308, #ca8a04);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(45deg, #ca8a04, #eab308);
+        }
+
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .url-input {
+                width: 250px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="animated-bg">
+        <div class="floating-shapes">
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+        </div>
+    </div>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <div class="acm-logo">ACM</div>
+                <span class="logo-text">Data Insights Challenge</span>
+            </div>
+            <div class="nav-controls">
+                <input type="url" class="url-input" id="urlInput" placeholder="Enter URL...">
+                <button class="nav-btn" onclick="navigateToUrl()">Navigate</button>
+            </div>
+            <div class="nav-controls">
+                <button class="nav-btn" onclick="window.open('https://forms.gle/GiDAHRV4reAjWK6x7', '_blank')">Submit Flag</button>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <header class="header">
+            <h1>ACM CTF DATA INSIGHTS</h1>
+            <p class="subtitle">Cyber Training & Insight Analysis</p>
+            <div class="challenge-info">
+                <h3>Challenge Overview</h3>
+                <p>Agent, infiltrate the insight system and recover the flag. Use reconnaissance, code review, and insight detection. Flag pieces are scattered - reconstruct to succeed.</p>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 15%;"></div>
+                </div>
+                <p><strong>Progress:</strong> <span id="progressText">Challenge Begun - Investigate</span></p>
+            </div>
+        </header>
+
+        <div class="dashboard">
+            <div class="panel">
+                <h2>AI Insight Module</h2>
+                <div class="fact-display" id="aiResponse">
+                    <strong>AI Ready:</strong> Assist with analysis. Query vulnerabilities or patterns.
+                </div>
+                <div class="network-grid">
+                    <div class="network-node">
+                        <span class="status-indicator status-online"></span>Processing: Active
+                    </div>
+                    <div class="network-node">
+                        <span class="status-indicator status-warning"></span>Mode: Limited
+                    </div>
+                </div>
+                <button class="btn" onclick="askAI()">Ask AI</button>
+                <button class="btn" onclick="trainModel()">Model Training</button>
+            </div>
+
+            <div class="panel">
+                <h2>Network Insights</h2>
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="activeConnections">247</div>
+                        <div>Connections</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="bandwidth">1.2GB</div>
+                        <div>Bandwidth</div>
+                    </div>
+                </div>
+                <div class="data-stream" id="networkStream">
+                    [MONITOR] Traffic active...<br>
+                    [ALERT] Packet from 192.168.1.100<br>
+                    [SCAN] Port attempt blocked<br>
+                    [FIREWALL] Connections filtered<br>
+                </div>
+                <button class="btn" onclick="startNetworkScan()">Scan Network</button>
+                <button class="btn" onclick="blockTraffic()">Block Traffic</button>
+            </div>
+
+            <div class="panel">
+                <h2>Insight Generator</h2>
+                <div class="fact-display" id="factDisplay">
+                    <strong>Ready:</strong> Generate insights from database.
+                </div>
+                <button class="btn" onclick="generateFact()">Generate Insight</button>
+                <button class="btn" onclick="generateMultipleFacts()">Batch (5x)</button>
+                <button class="btn" onclick="generateSecretFact()">Classified Insights</button>
+                <div class="network-grid">
+                    <div class="network-node">
+                        <span class="status-indicator status-online"></span>DB: Online
+                    </div>
+                    <div class="network-node">
+                        <span class="status-indicator status-warning"></span>Encrypt: Active
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2>Ledger Insights</h2>
+                <div class="terminal">
+                    <div class="prompt">ledger@block:~$ query blocks</div>
+                    <div class="output">
+                        Height: 875439<br>
+                        Hash: 0x7f8a9b2c3d4e5f6789abcdef123456789<br>
+                        Tx: 2847<br>
+                        Gas: 12,456,789<br>
+                        <span class="hint">Contracts hide messages...</span>
+                    </div>
+                </div>
+                <div class="network-grid">
+                    <div class="network-node">
+                        <span class="status-indicator status-online"></span>Mine: Active
+                    </div>
+                    <div class="network-node">
+                        <span class="status-indicator status-online"></span>Consensus: Done
+                    </div>
+                </div>
+                <button class="btn" onclick="mineBlock()">Mine</button>
+                <button class="btn" onclick="queryContracts()">Query</button>
+            </div>
+
+            <div class="panel">
+                <h2>Insight Center</h2>
+                <div class="terminal">
+                    <div class="prompt">root@server:~$ status insights</div>
+                    <div class="output" id="terminalOutput">
+                        ● insights.service<br>
+                        Active: running<br>
+                        PID: 1337<br>
+                        Memory: 256.7M<br>
+                        CGroup: /system.slice/insights.service<br>
+                        <span class="hint">Truth hidden...</span>
+                    </div>
+                </div>
+                <button class="btn" onclick="runSystemCheck()">Diagnostics</button>
+                <button class="btn" onclick="accessLogs()">Logs</button>
+                <button class="btn" onclick="emergencyProtocol()">Protocol</button>
+            </div>
+
+            <div class="panel">
+                <h2>Satellite Insights</h2>
+                <div class="data-stream" id="satelliteStream">
+                    [CONN] To CYBERSAT-7...<br>
+                    [SIGNAL] 89%<br>
+                    [DECRYPT] Transmission...<br>
+                    [DATA] Coordinates...<br>
+                    [STATUS] Established<br>
+                </div>
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="signalStrength">89%</div>
+                        <div>Signal</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="latency">45ms</div>
+                        <div>Latency</div>
+                    </div>
+                </div>
+                <button class="btn" onclick="establishUplink()">Uplink</button>
+                <button class="btn" onclick="interceptSignals()">Intercept</button>
+            </div>
+
+            <div class="panel">
+                <h2>Neural Insights</h2>
+                <div class="data-stream" id="dataStream">
+                    [BOOT] Neural...<br>
+                    [CONN] Secure...<br>
+                    [SEC] Encryption...<br>
+                    [CORE] Models...<br>
+                    [STATUS] Ready...<br>
+                </div>
+                <button class="btn" onclick="clearStream()">Clear</button>
+                <button class="btn" onclick="startStream()">Stream</button>
+                <button class="btn" onclick="injectCode()">Injection</button>
+                <div class="network-grid">
+                    <div class="network-node">
+                        <span class="status-indicator status-online"></span>Core: Active
+                    </div>
+                    <div class="network-node">
+                        <span class="status-indicator status-error"></span>Wall: Breached
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2>Analytics Insights</h2>
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="factCount">0</div>
+                        <div>Analyzed</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="dataPoints">13337</div>
+                        <div>Points</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="secretsFound">?</div>
+                        <div>Discovered</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="threatLevel">LOW</div>
+                        <div>Threat</div>
+                    </div>
+                </div>
+                <button class="btn" onclick="analyzeData()">Analysis</button>
+                <button class="btn" onclick="scanVulnerabilities()">Scan</button>
+                <button class="btn" onclick="hackTheSystem()">Hack</button>
+            </div>
+
+            <div class="panel">
+                <h2>Crypto Insights</h2>
+                <div class="terminal">
+                    <div class="prompt">crypto@vault:~$ ls /encrypted/</div>
+                    <div class="output">
+                        total 42<br>
+                        flag_part1.enc<br>
+                        secrets.db<br>
+                        quantum_key.pem<br>
+                        <span class="hint">Special access...</span>
+                    </div>
+                </div>
+                <button class="btn" onclick="decryptFiles()">Decrypt</button>
+                <button class="btn" onclick="bruteForce()">Brute</button>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="decryptProgress" style="width: 0%;"></div>
+                </div>
+                <p>Progress: <span id="decryptText">Awaiting</span></p>
+            </div>
+
+            <div class="panel">
+                <h2>Quantum Interface</h2>
+                <div class="terminal">
+                    <div class="prompt">qpu@quantum:~$ status</div>
+                    <div class="output" id="quantumOutput">
+                        Unit: ONLINE<br>
+                        Qubits: 127<br>
+                        Volume: 512<br>
+                        Error: 0.001%<br>
+                        <span class="hint">Supremacy...</span>
+                    </div>
+                </div>
+                <button class="btn" onclick="runQuantumAlgorithm()">Shor's</button>
+                <button class="btn" onclick="simulateQuantum()">Simulate</button>
+                <button class="btn" onclick="breakEncryption()">Break</button>
+            </div>
+
+            <div class="panel">
+                <h2>Biometric Insights</h2>
+                <div class="fact-display" id="biometricDisplay">
+                    <strong>Status:</strong> Ready for scan.
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="scanProgress" style="width: 0%;"></div>
+                </div>
+                <p>Progress: <span id="scanText">Awaiting</span></p>
+                <div class="network-grid">
+                    <div class="network-node">
+                        <span class="status-indicator status-warning"></span>Fingerprint: Not
+                    </div>
+                    <div class="network-node">
+                        <span class="status-indicator status-error"></span>Retinal: Denied
+                    </div>
+                </div>
+                <button class="btn" onclick="scanFingerprint()">Fingerprint</button>
+                <button class="btn" onclick="scanRetina()">Retina</button>
+            </div>
+
+            <div class="panel">
+                <h2>Warfare Insights</h2>
+                <div class="data-stream" id="warfareStream">
+                    [INTEL] Monitoring...<br>
+                    [ALERT] APT...<br>
+                    [DEFENSE] Counter...<br>
+                    [OFFENSE] Protocols...<br>
+                    [STATUS] DefCon 3<br>
+                </div>
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="threatsBlocked">1,247</div>
+                        <div>Blocked</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="attacksRepelled">89</div>
+                        <div>Repelled</div>
+                    </div>
+                </div>
+                <button class="btn" onclick="launchCounterAttack()">Counter</button>
+                <button class="btn" onclick="activateDefenses()">Defenses</button>
+                <button class="btn" onclick="gatherIntel()">Intel</button>
+            </div>
+        </div>
+
+        <div class="secret-section">
+            <h2>CORE CHALLENGE</h2>
+            <p class="hint">Locate and build the flag!</p>
+            <p>Techniques:</p>
+            <ul style="text-align: left; max-width: 600px; margin: 20px auto;">
+                <li>Code Review</li>
+                <li>Comment Search</li>
+                <li>Console Check</li>
+                <li>Function Analysis</li>
+                <li>Pattern Spotting</li>
+            </ul>
+            <div class="terminal">
+                <div class="prompt">user@challenge:~$ grep "flag" /www/</div>
+                <div class="output">
+                    index.html:<!-- Decoy: FLAG{fake} --><br>
+                    script.js: // Fragments in source<br>
+                    <span class="hint">Lead found - continue!</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const facts = [
+            "Quantum entanglement for communication",
+            "Blockchain immutable ledger",
+            "First ransomware in 1989 floppy",
+            "Dark web 0.01% of internet",
+            "Social engineering 98% attacks",
+            "Deepfakes real-time AI",
+            "Zero-day over $1M dark web",
+            "Buffer overflows common exploit",
+            "Human brain 20 watts",
+            "First virus 'Creeper' 1971",
+            "Bug from moth 1947",
+            "350,000 malware daily",
+            "Breach cost $4.45M 2024",
+            "Biometric hackable",
+            "Longest attack 7 years",
+            "Neural encrypted patterns",
+            "ML predict 94% accuracy",
+            "Steganography image messages"
+        ];
+
+        let factCounter = 0;
+        let streamInterval = null;
+        let hackingInProgress = false;
+
+        // Debounce utility
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        function navigateToUrl() {
+            try {
+                const url = document.getElementById('urlInput').value.trim();
+                if (url) {
+                    let targetUrl = url.startsWith('http://') || url.startsWith('https://') ? url : 'https://' + url;
+                    window.open(targetUrl, '_blank');
+                    updateDataStream(`Navigated to: ${targetUrl}`);
+                } else {
+                    updateDataStream('Error: Enter a valid URL');
+                }
+            } catch (error) {
+                updateDataStream('Error: Invalid URL');
+            }
+        }
+
+        function generateFact() {
+            try {
+                const randomFact = facts[Math.floor(Math.random() * facts.length)];
+                document.getElementById('factDisplay').innerHTML = `<strong>Insight #${++factCounter}:</strong><br>${randomFact}<br><em>UNCLASSIFIED</em>`;
+                document.getElementById('factCount').textContent = factCounter;
+                updateDataStream(`Insight: "${randomFact.substring(0, 30)}..."`);
+                updateProgress();
+            } catch (error) {
+                updateDataStream('Error generating insight');
+            }
+        }
+
+        function generateMultipleFacts() {
+            try {
+                let factsList = '<strong>Batch:</strong><br>';
+                for (let i = 0; i < 5; i++) {
+                    const randomFact = facts[Math.floor(Math.random() * facts.length)];
+                    factsList += `${i + 1}. ${randomFact}<br>`;
+                    factCounter++;
+                }
+                factsList += '<em>COMPLETE</em>';
+                document.getElementById('factDisplay').innerHTML = factsList;
+                document.getElementById('factCount').textContent = factCounter;
+                updateDataStream('Batch 5 insights');
+                updateProgress();
+            } catch (error) {
+                updateDataStream('Error in batch generation');
+            }
+        }
+
+        function generateSecretFact() {
+            try {
+                const secretFacts = [
+                    "ACM founded 1947 largest society",
+                    "Algorithms break encryption polynomial",
+                    "NSA quantum 2048-bit RSA",
+                    "Backdoors in crypto",
+                    "APTs undetected decades"
+                ];
+                const secretFact = secretFacts[Math.floor(Math.random() * secretFacts.length)];
+                document.getElementById('factDisplay').innerHTML = `<strong>CLASSIFIED #${++factCounter}:</strong><br>${secretFact}<br><em>TOP SECRET</em>`;
+                document.getElementById('factCount').textContent = factCounter;
+                updateDataStream(`Classified: "${secretFact.substring(0, 30)}..."`);
+                updateProgress();
+                document.getElementById('threatLevel').textContent = 'MEDIUM';
+            } catch (error) {
+                updateDataStream('Error accessing classified data');
+            }
+        }
+
+        const debouncedHack = debounce(hackTheSystem, 1000);
+        function hackTheSystem() {
+            if (hackingInProgress) return;
+            hackingInProgress = true;
+            updateDataStream('COMPROMISE...');
+            document.getElementById('threatLevel').textContent = 'CRITICAL';
+            const hackSteps = [
+                "Bypass auth...",
+                "Exploit...",
+                "Backdoor...",
+                "Extract...",
+                "Fragments...",
+                "Payload...",
+                "Decrypt...",
+                "COMPROMISED!"
+            ];
+            hackSteps.forEach((step, index) => {
+                setTimeout(() => {
+                    updateDataStream(step);
+                    if (index === hackSteps.length - 1) {
+                        setTimeout(() => {
+                            updateDataStream('Hacked! Check console...');
+                            hackingInProgress = false;
+                        }, 1000);
+                    }
+                }, index * 800);
+            });
+        }
+
+        function analyzeData() {
+            try {
+                const analysis = [
+                    "Scanning structures...",
+                    "Integrity: 98.7%",
+                    "Protocols: ACTIVE",
+                    "Anomalies: 3",
+                    "Encryption: AES-256"
+                ];
+                let output = "=== REPORT ===<br>";
+                analysis.forEach((item, index) => {
+                    setTimeout(() => {
+                        output += `${item}<br>`;
+                        document.getElementById('terminalOutput').innerHTML = output;
+                    }, index * 500);
+                });
+                setTimeout(() => {
+                    output += "<br><span class='hint'>Hidden in code...</span>";
+                    document.getElementById('terminalOutput').innerHTML = output;
+                    document.getElementById('threatLevel').textContent = 'HIGH';
+                }, 3000);
+            } catch (error) {
+                updateDataStream('Error in analysis');
+            }
+        }
+
+        function scanVulnerabilities() {
+            try {
+                updateDataStream('Scan initiating...');
+                const vulnerabilities = [
+                    "SQL: 0",
+                    "XSS: 2",
+                    "CSRF: ENABLED",
+                    "Injection: 1"
+                ];
+                vulnerabilities.forEach((vuln, index) => {
+                    setTimeout(() => {
+                        updateDataStream(`${vuln}`);
+                    }, index * 600);
+                });
+                setTimeout(() => {
+                    updateDataStream('CRITICAL: Fragments!');
+                    document.getElementById('threatLevel').textContent = 'CRITICAL';
+                }, 3000);
+            } catch (error) {
+                updateDataStream('Error scanning vulnerabilities');
+            }
+        }
+
+        function runSystemCheck() {
+            try {
+                const checks = [
+                    "Processor: OK",
+                    "Connections: OK",
+                    "Protocols: WARNING",
+                    "Integrity: COMPROMISED"
+                ];
+                let output = "";
+                checks.forEach((check, index) => {
+                    setTimeout(() => {
+                        output += `${check}<br>`;
+                        document.getElementById('terminalOutput').innerHTML = output;
+                    }, index * 700);
+                });
+            } catch (error) {
+                updateDataStream('Error in diagnostics');
+            }
+        }
+
+        function accessLogs() {
+            try {
+                const logs = [
+                    "[14:30] Auth: SUCCESS",
+                    "[14:31] Query: facts",
+                    "[14:32] Suspicious exec",
+                    "[14:33] Logins 192.168.1.100"
+                ];
+                let output = "=== LOGS ===<br>";
+                logs.forEach((log, index) => {
+                    setTimeout(() => {
+                        output += `${log}<br>`;
+                        document.getElementById('terminalOutput').innerHTML = output;
+                    }, index * 400);
+                });
+            } catch (error) {
+                updateDataStream('Error accessing logs');
+            }
+        }
+
+        function emergencyProtocol() {
+            try {
+                updateDataStream('PROTOCOL ACTIVATED');
+                updateDataStream('Lockdown...');
+                updateDataStream('Connections cut...');
+                updateDataStream('Complete - Secured');
+                document.getElementById('threatLevel').textContent = 'SECURED';
+            } catch (error) {
+                updateDataStream('Error in protocol');
+            }
+        }
+
+        function clearStream() {
+            try {
+                document.getElementById('dataStream').innerHTML = "Cleared...<br>Awaiting...<br>";
+            } catch (error) {
+                console.error('Error clearing stream');
+            }
+        }
+
+        function startStream() {
+            if (streamInterval) clearInterval(streamInterval);
+            const streamMessages = [
+                "Processing packets...",
+                "Fact patterns...",
+                "Anomalies...",
+                "Behavior..."
+            ];
+            streamInterval = setInterval(() => {
+                const message = streamMessages[Math.floor(Math.random() * streamMessages.length)];
+                updateDataStream(message);
+            }, 5000); // Increased interval
+            updateDataStream("Stream activated");
+        }
+
+        function injectCode() {
+            try {
+                updateDataStream('Injection...');
+                updateDataStream('Payload...');
+                updateDataStream('HINT: Console!');
+            } catch (error) {
+                updateDataStream('Error in injection');
+            }
+        }
+
+        function decryptFiles() {
+            try {
+                let progress = 0;
+                const progressBar = document.getElementById('decryptProgress');
+                const progressText = document.getElementById('decryptText');
+                const decryptInterval = setInterval(() => {
+                    progress += Math.random() * 10;
+                    if (progress > 100) progress = 100;
+                    progressBar.style.width = progress + '%';
+                    progressText.textContent = progress < 100 ? 'Decrypting...' : 'Complete! Console.';
+                    if (progress >= 100) clearInterval(decryptInterval);
+                }, 500);
+            } catch (error) {
+                updateDataStream('Error decrypting files');
+            }
+        }
+
+        function bruteForce() {
+            try {
+                updateDataStream('Brute...');
+                updateDataStream('Cracked!');
+                updateDataStream('Granted!');
+            } catch (error) {
+                updateDataStream('Error in brute force');
+            }
+        }
+
+        function startNetworkScan() {
+            try {
+                updateNetworkStream('Scan...');
+                updateNetworkStream('Open: 22,80,443');
+                updateNetworkStream('Mapped');
+            } catch (error) {
+                updateNetworkStream('Error scanning network');
+            }
+        }
+
+        function blockTraffic() {
+            try {
+                updateNetworkStream('Blocked IPs');
+                updateNetworkStream('Rules updated');
+                document.getElementById('activeConnections').textContent = '189';
+            } catch (error) {
+                updateNetworkStream('Error blocking traffic');
+            }
+        }
+
+        function mineBlock() {
+            try {
+                updateDataStream('Mining...');
+                updateDataStream('Mined!');
+            } catch (error) {
+                updateDataStream('Error mining block');
+            }
+        }
+
+        function queryContracts() {
+            try {
+                updateDataStream('Querying...');
+                updateDataStream('Vuln found');
+            } catch (error) {
+                updateDataStream('Error querying contracts');
+            }
+        }
+
+        function askAI() {
+            try {
+                const aiResponses = [
+                    "Recon detected.",
+                    "APT presence.",
+                    "Hidden data.",
+                    "Insider threat."
+                ];
+                const response = aiResponses[Math.floor(Math.random() * aiResponses.length)];
+                document.getElementById('aiResponse').innerHTML = `<strong>Analysis:</strong><br>${response}`;
+            } catch (error) {
+                updateDataStream('Error querying AI');
+            }
+        }
+
+        function trainModel() {
+            try {
+                updateDataStream('Training...');
+                updateDataStream('Progress...');
+            } catch (error) {
+                updateDataStream('Error training model');
+            }
+        }
+
+        function establishUplink() {
+            try {
+                updateSatelliteStream('[CONN] CYBERSAT-7...');
+                updateSatelliteStream('[STATUS] Secure');
+            } catch (error) {
+                updateSatelliteStream('Error establishing uplink');
+            }
+        }
+
+        function interceptSignals() {
+            try {
+                updateSatelliteStream('[SCAN] Spectrum...');
+                updateSatelliteStream('[SUCCESS] Decoded');
+            } catch (error) {
+                updateSatelliteStream('Error intercepting signals');
+            }
+        }
+
+        function runQuantumAlgorithm() {
+            try {
+                document.getElementById('quantumOutput').innerHTML = 
+                    'Shor\'s...<br>RSA-2048<br>Time: 0.003s<br><span class="hint">Broken!</span>';
+            } catch (error) {
+                updateDataStream('Error running quantum algorithm');
+            }
+        }
+
+        function simulateQuantum() {
+            try {
+                updateDataStream('Simulation...');
+                updateDataStream('Complete');
+            } catch (error) {
+                updateDataStream('Error in quantum simulation');
+            }
+        }
+
+        function breakEncryption() {
+            try {
+                updateDataStream('AES-256...');
+                updateDataStream('Recovered!');
+            } catch (error) {
+                updateDataStream('Error breaking encryption');
+            }
+        }
+
+        function scanFingerprint() {
+            try {
+                let progress = 0;
+                const progressBar = document.getElementById('scanProgress');
+                const progressText = document.getElementById('scanText');
+                const scanInterval = setInterval(() => {
+                    progress += Math.random() * 15;
+                    if (progress > 100) progress = 100;
+                    progressBar.style.width = progress + '%';
+                    progressText.textContent = progress < 100 ? 'Scanning...' : 'Rejected';
+                    if (progress >= 100) clearInterval(scanInterval);
+                }, 300);
+            } catch (error) {
+                updateDataStream('Error scanning fingerprint');
+            }
+        }
+
+        function scanRetina() {
+            try {
+                let progress = 0;
+                const progressBar = document.getElementById('scanProgress');
+                const progressText = document.getElementById('scanText');
+                const scanInterval = setInterval(() => {
+                    progress += Math.random() * 20;
+                    if (progress > 100) progress = 100;
+                    progressBar.style.width = progress + '%';
+                    progressText.textContent = progress < 100 ? 'Analyzing...' : 'Verified';
+                    if (progress >= 100) {
+                        clearInterval(scanInterval);
+                        updateDataStream('Auth successful!');
+                    }
+                }, 400);
+            } catch (error) {
+                updateDataStream('Error scanning retina');
+            }
+        }
+
+        function launchCounterAttack() {
+            try {
+                updateWarfareStream('[COUNTER] Launching...');
+                updateWarfareStream('[SUCCESS] Compromised');
+                document.getElementById('attacksRepelled').textContent = '94';
+            } catch (error) {
+                updateWarfareStream('Error in counter attack');
+            }
+        }
+
+        function activateDefenses() {
+            try {
+                updateWarfareStream('[DEFENSE] Activating...');
+                updateWarfareStream('[STATUS] Operational');
+                document.getElementById('threatsBlocked').textContent = '1,389';
+            } catch (error) {
+                updateWarfareStream('Error activating defenses');
+            }
+        }
+
+        function gatherIntel() {
+            try {
+                updateWarfareStream('[INTEL] Gathering...');
+                updateWarfareStream('[DATABASE] Updated');
+            } catch (error) {
+                updateWarfareStream('Error gathering intel');
+            }
+        }
+
+        function updateDataStream(message) {
+            try {
+                const stream = document.getElementById('dataStream');
+                const timestamp = new Date().toLocaleTimeString();
+                stream.innerHTML += `[${timestamp}] ${message}<br>`;
+                if (stream.childNodes.length > 50) {
+                    stream.innerHTML = stream.innerHTML.split('<br>').slice(-20).join('<br>');
+                }
+                stream.scrollTop = stream.scrollHeight;
+            } catch (error) {
+                console.error('Error updating data stream');
+            }
+        }
+
+        function updateNetworkStream(message) {
+            try {
+                const stream = document.getElementById('networkStream');
+                const timestamp = new Date().toLocaleTimeString();
+                stream.innerHTML += `[${timestamp}] ${message}<br>`;
+                if (stream.childNodes.length > 50) {
+                    stream.innerHTML = stream.innerHTML.split('<br>').slice(-20).join('<br>');
+                }
+                stream.scrollTop = stream.scrollHeight;
+            } catch (error) {
+                console.error('Error updating network stream');
+            }
+        }
+
+        function updateSatelliteStream(message) {
+            try {
+                const stream = document.getElementById('satelliteStream');
+                const timestamp = new Date().toLocaleTimeString();
+                stream.innerHTML += `[${timestamp}] ${message}<br>`;
+                if (stream.childNodes.length > 50) {
+                    stream.innerHTML = stream.innerHTML.split('<br>').slice(-20).join('<br>');
+                }
+                stream.scrollTop = stream.scrollHeight;
+            } catch (error) {
+                console.error('Error updating satellite stream');
+            }
+        }
+
+        function updateWarfareStream(message) {
+            try {
+                const stream = document.getElementById('warfareStream');
+                const timestamp = new Date().toLocaleTimeString();
+                stream.innerHTML += `[${timestamp}] ${message}<br>`;
+                if (stream.childNodes.length > 50) {
+                    stream.innerHTML = stream.innerHTML.split('<br>').slice(-20).join('<br>');
+                }
+                stream.scrollTop = stream.scrollHeight;
+            } catch (error) {
+                console.error('Error updating warfare stream');
+            }
+        }
+
+        function updateProgress() {
+            try {
+                const progress = Math.min((factCounter * 10) + 15, 85);
+                document.getElementById('progressFill').style.width = progress + '%';
+                document.getElementById('progressText').textContent = 
+                    progress < 25 ? 'Reconnaissance' :
+                    progress < 50 ? 'Collection' :
+                    progress < 75 ? 'Analysis' : 'Exploitation';
+            } catch (error) {
+                console.error('Error updating progress');
+            }
+        }
+
+        function updateMetrics() {
+            try {
+                const randomValue = Math.floor(Math.random() * 50000);
+                document.getElementById('dataPoints').textContent = 13337 + randomValue;
+                const connections = 200 + Math.floor(Math.random() * 100);
+                document.getElementById('activeConnections').textContent = connections;
+                const bandwidth = (1.0 + Math.random() * 2).toFixed(1);
+                document.getElementById('bandwidth').textContent = bandwidth + 'GB';
+                const signal = Math.floor(85 + Math.random() * 15);
+                document.getElementById('signalStrength').textContent = signal + '%';
+                const latency = Math.floor(30 + Math.random() * 50);
+                document.getElementById('latency').textContent = latency + 'ms';
+            } catch (error) {
+                console.error('Error updating metrics');
+            }
+        }
+
+        // Consolidated metrics update
+        setInterval(updateMetrics, 10000);
+
+        // Debug functions
+        window.quantumDebug = function() {
+            console.log("Debug Activated");
+            console.log("Searching fragments...");
+            console.log("Tip: Check comments");
+            return "Debug enabled!";
+        };
+
+        window.neuralHack = function() {
+            console.log("Hack Initiated");
+            console.log("Extracting...");
+            return "Hack complete!";
+        };
+
+        window.yellowHacker = function() {
+            console.log("Yellow Protocol");
+            console.log("Success!");
+            return "Theme complete!";
+        };
+
+        // Dev tools detection
+        let devToolsDetected = false;
+        setInterval(() => {
+            try {
+                const heightDiff = window.outerHeight - window.innerHeight;
+                const widthDiff = window.outerWidth - window.innerWidth;
+                if (heightDiff > 200 || widthDiff > 200) {
+                    if (!devToolsDetected) {
+                        devToolsDetected = true;
+                        updateDataStream("Tools detected!");
+                        console.log("Detected! Try quantumDebug(), neuralHack(), yellowHacker()");
+                    }
+                } else {
+                    devToolsDetected = false;
+                }
+            } catch (error) {
+                console.error('Error in dev tools detection');
+            }
+        }, 2000);
+
+        // Initial setup
+        updateDataStream("System initialized");
+        console.log("ACM CTF Online");
+        console.log("Hint: Try quantumDebug(), neuralHack(), yellowHacker()");
+    </script>
+</body>
+</html>
