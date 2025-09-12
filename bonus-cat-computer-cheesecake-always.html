@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Congrats! Bonus Key Found</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .navbar {
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .acm-logo {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(45deg, #4f46e5, #a855f7);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .acm-logo:hover {
+            transform: scale(1.1);
+        }
+
+        .logo-text {
+            font-size: 1.3em;
+            font-weight: 600;
+        }
+
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .url-input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 8px 12px;
+            color: #ffffff;
+            font-family: inherit;
+            width: 280px;
+            transition: all 0.3s ease;
+        }
+
+        .url-input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(79, 70, 229, 0.5);
+        }
+
+        .url-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .nav-btn {
+            background: linear-gradient(45deg, #4f46e5, #a855f7);
+            border: none;
+            color: #ffffff;
+            padding: 8px 18px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+        }
+
+        .container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            z-index: 10;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 20px;
+            animation: fadeIn 1.5s ease-in-out;
+            text-shadow: 0 0 15px rgba(79, 70, 229, 0.5);
+        }
+
+        p {
+            font-size: 1.4rem;
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 30px;
+            max-width: 600px;
+            animation: fadeIn 2s ease-in-out 0.3s;
+            opacity: 0;
+            animation-fill-mode: forwards;
+        }
+
+        .key-container {
+            position: relative;
+            padding: 20px 40px;
+            background: linear-gradient(45deg, rgba(79, 70, 229, 0.2), rgba(168, 85, 247, 0.2));
+            border: 2px solid rgba(79, 70, 229, 0.5);
+            border-radius: 12px;
+            display: inline-block;
+            animation: glowKey 2s infinite ease-in-out;
+            box-shadow: 0 0 20px rgba(79, 70, 229, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .key-container:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(79, 70, 229, 0.5);
+        }
+
+        .key {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: 1px;
+            background: linear-gradient(45deg, #4f46e5, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes glowKey {
+            0% { box-shadow: 0 0 20px rgba(79, 70, 229, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(79, 70, 229, 0.6); }
+            100% { box-shadow: 0 0 20px rgba(79, 70, 229, 0.3); }
+        }
+
+        /* Particle Background */
+        .particle-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: rgba(79, 70, 229, 0.3);
+            border-radius: 50%;
+            animation: driftParticle 20s infinite linear;
+            pointer-events: none;
+        }
+
+        @keyframes driftParticle {
+            0% { transform: translateY(100vh) translateX(0); opacity: 0.3; }
+            50% { opacity: 0.5; }
+            100% { transform: translateY(-100vh) translateX(20px); opacity: 0.3; }
+        }
+
+        /* Subtle Glow Effect */
+        .glow {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, rgba(79, 70, 229, 0.3) 10%, transparent 70%);
+            border-radius: 50%;
+            animation: pulseGlow 5s infinite ease-in-out;
+            pointer-events: none;
+        }
+
+        @keyframes pulseGlow {
+            0% { transform: scale(0.8); opacity: 0.2; }
+            50% { transform: scale(1.2); opacity: 0.4; }
+            100% { transform: scale(0.8); opacity: 0.2; }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .url-input {
+                width: 240px;
+            }
+
+            h1 {
+                font-size: 2.2rem;
+            }
+
+            p {
+                font-size: 1.2rem;
+            }
+
+            .key-container {
+                padding: 15px 25px;
+            }
+
+            .key {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <div class="acm-logo">ACM</div>
+                <span class="logo-text">Data Insights Challenge</span>
+            </div>
+            <div class="nav-controls">
+                <input type="url" class="url-input" id="urlInput" placeholder="Enter URL...">
+                <button class="nav-btn" onclick="navigateToUrl()">Navigate</button>
+            </div>
+            <div class="nav-controls">
+                <button class="nav-btn" onclick="window.open('https://forms.gle/GiDAHRV4reAjWK6x7', '_blank')">Submit Flag</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="particle-container" id="particleContainer"></div>
+    <div class="container">
+        <h1>Congrats! You Found the Bonus Key!</h1>
+        <p>Your skills have unlocked a hidden treasure in the ACM CTF Challenge!</p>
+        <div class="key-container">
+            <span class="key">BONUS_KEY{ACM_ULTIMATE_2025}</span>
+        </div>
+    </div>
+
+    <script>
+        // Generate Particles
+        function createParticle() {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = `${Math.random() * 100}vw`;
+            particle.style.top = `${Math.random() * 100}vh`;
+            particle.style.animationDuration = `${Math.random() * 10 + 15}s`;
+            document.getElementById('particleContainer').appendChild(particle);
+            setTimeout(() => particle.remove(), 20000);
+        }
+
+        // Generate Glow Effects
+        function createGlow() {
+            const glow = document.createElement('div');
+            glow.className = 'glow';
+            glow.style.left = `${Math.random() * 100}vw`;
+            glow.style.top = `${Math.random() * 100}vh`;
+            document.getElementById('particleContainer').appendChild(glow);
+            setTimeout(() => glow.remove(), 5000);
+        }
+
+        // Initialize Animations
+        setInterval(createParticle, 800);
+        setInterval(createGlow, 2000);
+
+        // Dynamic Color Updates for Key
+        const keyContainer = document.querySelector('.key-container');
+        setInterval(() => {
+            keyContainer.style.borderColor = `hsl(${Math.random() * 360}, 60%, 60%)`;
+        }, 3000);
+
+        // Navigation Function
+        function navigateToUrl() {
+            try {
+                const url = document.getElementById('urlInput').value.trim();
+                if (url) {
+                    let targetUrl = url.startsWith('http://') || url.startsWith('https://') ? url : 'https://' + url;
+                    window.open(targetUrl, '_blank');
+                    console.log(`Navigated to: ${targetUrl}`);
+                } else {
+                    console.error('Error: Enter a valid URL');
+                }
+            } catch (error) {
+                console.error('Error: Invalid URL');
+            }
+        }
+
+        // Console Easter Egg
+        console.log('🎉 BONUS_KEY{ACM_ULTIMATE_2025} 🎉');
+        console.log('You found the ultimate secret! Submit this key to claim your victory!');
+    </script>
+</body>
+</html>
