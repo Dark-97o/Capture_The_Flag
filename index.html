@@ -116,9 +116,9 @@
         }
 
         .acm-logo {
-            width: 45px;
-            height: 45px;
-            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            width: 200px;
+            height: 96px;
+            background: linear-gradient(45deg, #393939, #1a1a1a);
             border-radius: 8px;
             display: flex;
             align-items: center;
@@ -443,17 +443,24 @@
 
     <!-- Navigation Bar -->
     <nav class="navbar">
-        <div class="nav-container">
-            <div class="logo">
-                <div class="acm-logo">ACM</div>
-                <span class="logo-text">Cyber Challenge</span>
-            </div>
-            <div class="nav-controls">
-                <a href="https://ctf-acmuemj.netlify.app/page1" class="nav-btn">Start Challenge</a>
-            </div>
+    <div class="nav-container">
+        <div class="logo">
+        <img 
+            src="https://lh3.googleusercontent.com/pw/AP1GczOTKQunEeWnW2CxZnZmd7QgojJg44rypptcVk5yFSNHkEXBCiR1_OF82POTCAkAnpDaFvlBoCdjFShe2X2e82V6atzWHqjhA9U4wtB2urHsoILJLH95u_lPWqbTBdlbBY1ZYqIJ7oz_CC5Adb9ifBYY=w572-h296-s-no-gm?authuser=0" 
+            alt="ACM Cyber Challenge Logo" 
+            class="acm-logo"
+        >
+        <span class="logo-text">Capture The Flag Challenge</span>
         </div>
+
+        <div class="nav-controls">
+        <a href="https://ctf-acmuemj.netlify.app/page1" class="nav-btn">
+            Start Challenge
+        </a>
+        </div>
+    </div>
     </nav>
-    
+
     <div class="container">
         <header class="header">
             <h1>ACM CTF CYBER CHALLENGE</h1>
@@ -489,7 +496,7 @@
                     </li>
                     
                     <li><strong>Flag Format:</strong> Flag fragments will follow this format → <code>Secret Key Part 1/2/3 : xyzabc</code></li>
-                    
+                    <li><strong>Flag Format:</strong> Flag fragments will follow this format → <code>Bonus Key Part 1/2/3 : xyzabc</code></li>
                     <li><strong>Rules:</strong> No brute-forcing, no denial-of-service attacks, and no sharing of solutions. Any violation = <strong>immediate disqualification</strong>.</li>
                     </ul>
 
@@ -543,8 +550,8 @@
             "Steganography allows hiding secret messages inside innocent-looking images",
             "Buffer overflow attacks remain one of the most common exploitation techniques",
             "The human brain processes information at approximately 20 watts of power",
-            "Bonus Key Part 4: always.html"
-        ];
+            "Bonus Key Part 5: always.html"
+        ]; 
 
         let factCounter = 0;
         let streamInterval;
