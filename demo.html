@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!--Secret Key PArt 3 : ex.html -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo Website - Cybersecurity Dashboard</title>
+    <style>
+        
+        * { 
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0d4f3c 0%, #1a7a5c 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .demo-banner {
+            background: linear-gradient(45deg, #fbbf24, #f59e0b);
+            color: #000000;
+            text-align: center;
+            padding: 15px;
+            font-weight: bold;
+            font-size: 1.1em;
+            position: sticky;
+            top: 0;
+            z-index: 9999;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .floating-shapes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .shape {
+            position: absolute;
+            background: rgba(34, 197, 94, 0.1);
+            border-radius: 50%;
+            animation: float 15s infinite linear;
+        }
+
+        .shape:nth-child(1) { 
+            width: 80px; height: 80px; 
+            top: 20%; left: 10%;
+            animation-delay: 0s;
+        }
+        .shape:nth-child(2) { 
+            width: 60px; height: 60px; 
+            top: 60%; left: 85%;
+            animation-delay: -5s;
+        }
+        .shape:nth-child(3) { 
+            width: 120px; height: 120px; 
+            top: 80%; left: 20%;
+            animation-delay: -10s;
+        }
+
+        @keyframes float {
+            0% { 
+                transform: translateY(0px) translateX(0px) rotate(0deg); 
+                opacity: 0.3; 
+            }
+            33% { 
+                transform: translateY(-30px) translateX(20px) rotate(120deg); 
+                opacity: 0.6; 
+            }
+            66% { 
+                transform: translateY(-60px) translateX(-10px) rotate(240deg); 
+                opacity: 0.4; 
+            }
+            100% { 
+                transform: translateY(0px) translateX(0px) rotate(360deg); 
+                opacity: 0.3; 
+            }
+        }
+
+        .navbar {
+            background: rgba(34, 197, 94, 0.15);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(34, 197, 94, 0.2);
+            padding: 15px 0;
+            position: sticky;
+            top: 60px;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .demo-logo {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(45deg, #22c55e, #16a34a);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+        }
+
+        .logo-text {
+            font-size: 1.4em;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .nav-btn {
+            background: linear-gradient(45deg, #22c55e, #16a34a);
+            border: none;
+            color: #ffffff;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(34, 197, 94, 0.4);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 60px 0;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+            background: linear-gradient(45deg, #22c55e, #16a34a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.3em;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 30px;
+        }
+
+        .demo-info {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 40px;
+            backdrop-filter: blur(10px);
+        }
+
+        .demo-info h3 {
+            color: #ffffff;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .panel {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(15px);
+            transition: all 0.3s ease;
+        }
+
+        .panel:hover {
+            background: rgba(34, 197, 94, 0.15);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .panel h2 {
+            color: #ffffff;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+        }
+
+        .display-area {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #22c55e;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #22c55e, #16a34a);
+            border: none;
+            color: #ffffff;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 8px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(34, 197, 94, 0.4);
+        }
+
+        .btn:disabled {
+            background: #6b7280;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            background: rgba(34, 197, 94, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 25px 0;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            color: #22c55e;
+            font-weight: bold;
+        }
+
+        .terminal {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .prompt {
+            color: #22c55e;
+        }
+
+        .output {
+            color: rgba(255, 255, 255, 0.9);
+            margin: 8px 0;
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        .status-online { background: #22c55e; }
+        .status-warning { background: #fcd34d; }
+        .status-error { background: #ef4444; }
+
+        .network-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .network-node {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .network-node:hover {
+            background: rgba(34, 197, 94, 0.2);
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Demo Banner -->
+    <div class="demo-banner">
+        🎯 DEMONSTRATION WEBSITE - This is a sample/demo webpage showcasing , How to do CTF Challenge ? 🎯
+    </div>
+
+    <!-- Animated background -->
+    <div class="animated-bg">
+        <div class="floating-shapes">
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <div class="demo-logo">DEMO</div>
+                <span class="logo-text">Cybersecurity Dashboard Demo</span>
+            </div>
+            <div class="nav-controls">
+                <input type="url" class="url-input" id="urlInput" placeholder="Enter URL...">
+                <button class="nav-btn" onclick="navigateToUrl()">Navigate</button>
+            </div>
+            <div>
+                <button class="nav-btn" onclick="showInfo()">About This Demo</button
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <header class="header">
+            <h1>CYBERSECURITY DASHBOARD</h1>
+            <p class="subtitle">Professional Demo of Modern Web Interface Design</p>
+            <div class="demo-info">
+                <h3>Demo Information</h3>
+                <p>This is a demonstration website showcasing modern web design techniques including gradient backgrounds, glassmorphism effects, interactive animations, and responsive layout design. All functions are for demonstration purposes only and do not perform actual cybersecurity operations.</p>
+            </div>
+        </header>
+
+        <div class="dashboard">
+            <!-- Security Monitor -->
+            <div class="panel">
+                <h2>Security Monitor</h2>
+                <div class="display-area" id="securityDisplay">
+                    <strong>System Status:</strong> All security systems operational. This is a demo interface showcasing modern cybersecurity dashboard design.
+                </div>
+                <button class="btn" onclick="updateSecurityStatus()">Update Status</button>
+                <div class="network-grid">
+                    <div class="network-node">
+                        <span class="status-indicator status-online"></span>Firewall: Active
+                    </div>
+                    <div class="network-node">
+                        <span class="status-indicator status-online"></span>Monitoring: Online
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Dashboard -->
+            <div class="panel">
+                <h2>Analytics Dashboard</h2>
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="eventsProcessed">1,247</div>
+                        <div>Events Processed</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="threatsBlocked">89</div>
+                        <div>Threats Blocked</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="systemHealth">98%</div>
+                        <div>System Health</div>
+                    </div>
+                </div>
+                <button class="btn" onclick="refreshAnalytics()">Refresh Analytics</button>
+                <button class="btn" onclick="generateReport()">Generate Report</button>
+            </div>
+
+            <!-- System Terminal -->
+            <div class="panel">
+                <h2>System Terminal</h2>
+                <div class="terminal">
+                    <div class="prompt">demo@cybersec-dashboard:~$ system status</div>
+                    <div class="output" id="terminalOutput">
+                        System: Operational<br>
+                        Services: All Running<br>
+                        Security Level: High<br>
+                        Demo Mode: Active<br>
+                        <br>
+                        <em>This is a demonstration terminal interface</em>
+                    </div>
+                </div>
+                <button class="btn" onclick="runSystemCheck()">System Check</button>
+                <button class="btn" onclick="viewLogs()">View Logs</button>
+            </div>
+
+            <!-- Network Overview -->
+            <div class="panel">
+                <h2>Network Overview</h2>
+                <div class="display-area" id="networkDisplay">
+                    <strong>Network Status:</strong> All connections stable. Bandwidth utilization at optimal levels. Demo interface active.
+                </div>
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="activeConnections">247</div>
+                        <div>Active Connections</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="bandwidthUsage">1.2GB</div>
+                        <div>Bandwidth Usage</div>
+                    </div>
+                </div>
+                <button class="btn" onclick="scanNetwork()">Network Scan</button>
+                <button class="btn" onclick="optimizeBandwidth()">Optimize</button>
+            </div>
+
+            <!-- Threat Intelligence -->
+            <div class="panel">
+                <h2>Threat Intelligence</h2>
+                <div class="terminal">
+                    <div class="prompt">threat-intel@demo:~$ latest_threats</div>
+                    <div class="output">
+                        Recent Threats: 5<br>
+                        Risk Level: Low<br>
+                        Last Update: 2 minutes ago<br>
+                        Status: Monitoring<br>
+                        <br>
+                        <em>Demo threat intelligence feed</em>
+                    </div>
+                </div>
+                <div class="network-grid">
+                    <div class="network-node">
+                        <span class="status-indicator status-online"></span>Intel Feed: Active
+                    </div>
+                    <div class="network-node">
+                        <span class="status-indicator status-warning"></span>Analysis: Processing
+                    </div>
+                </div>
+                <button class="btn" onclick="updateThreats()">Update Feed</button>
+                <button class="btn" onclick="analyzeThreats()">Analyze</button>
+            </div>
+
+            <!-- Compliance Monitor -->
+            <div class="panel">
+                <h2>Compliance Monitor</h2>
+                <div class="display-area" id="complianceDisplay">
+                    <strong>Compliance Status:</strong> All regulatory requirements met. Security policies implemented according to industry standards. Demo compliance dashboard.
+                </div>
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-value">100%</div>
+                        <div>GDPR Compliance</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">98%</div>
+                        <div>ISO 27001</div>
+                    </div>
+                </div>
+                <button class="btn" onclick="auditCompliance()">Run Audit</button>
+                <button class="btn" onclick="generateComplianceReport()">Generate Report</button>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 50px; padding: 30px; background: rgba(34, 197, 94, 0.1); border-radius: 15px;">
+            <h2>Demo Website Notice</h2>
+            <p style="margin: 20px 0;">This is a demonstration website created to showcase modern web design principles and cybersecurity dashboard interfaces. All data displayed is simulated and all functions are for demonstration purposes only.</p>
+            <p><strong>Features Demonstrated:</strong></p>
+            <p>• Modern CSS3 gradients and animations • Glassmorphism design effects • Responsive grid layouts • Interactive UI elements • Professional color schemes Secret Key Part 1: https://ctf-acmuemj.netlify.app/</p>
+        </div>
+    </div>
+
+    <script>
+        // Demo website functionality
+        let eventCount = 1247;
+        let threatCount = 89;
+        
+        function showInfo() {
+            alert('This is a demonstration website showcasing modern cybersecurity dashboard design. All functions are simulated for demo purposes only.');
+        }
+        
+        function updateSecurityStatus() {
+            const statuses = [
+                'All security systems operational - Demo interface active',
+                'Security protocols updated successfully - Demo mode',
+                'Monitoring systems running optimally - Demonstration only',
+                'Firewall and intrusion detection active - Demo dashboard'
+            ];
+            const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
+            document.getElementById('securityDisplay').innerHTML = `<strong>Updated Status:</strong> ${randomStatus}`;
+        }
+        
+        function refreshAnalytics() {
+            eventCount += Math.floor(Math.random() * 50);
+            threatCount += Math.floor(Math.random() * 5);
+            
+            document.getElementById('eventsProcessed').textContent = eventCount.toLocaleString();
+            document.getElementById('threatsBlocked').textContent = threatCount;
+            
+            // Show demo notification
+            setTimeout(() => {
+                alert('Analytics refreshed! (Demo simulation)');
+            }, 1000);
+        }
+        
+        function generateReport() {
+            alert('Demo Report Generated:\n\n• System Health: Excellent\n• Security Status: Secure\n• Performance: Optimal\n\n(This is a demonstration)');
+        }
+        
+        function runSystemCheck() {
+            const output = document.getElementById('terminalOutput');
+            output.innerHTML = `
+                Running system diagnostics...<br>
+                ✓ CPU Usage: Normal<br>
+                ✓ Memory: Optimal<br>
+                ✓ Disk Space: Sufficient<br>
+                ✓ Network: Connected<br>
+                ✓ Security: Active<br>
+                <br>
+                <em>Demo system check completed</em>
+            `;
+        }
+        
+        function viewLogs() {
+            const output = document.getElementById('terminalOutput');
+            output.innerHTML = `
+                Recent System Logs:<br>
+                [14:30:15] System started successfully<br>
+                [14:31:22] Security scan completed Secret Key PArt 2: ind <br>
+                [14:32:45] Demo mode activated<br>
+                [14:33:12] All systems operational<br>
+                <br>
+                <em>Demo log viewer active</em>
+            `;
+        }
+        
+        function scanNetwork() {
+            document.getElementById('networkDisplay').innerHTML = 
+                '<strong>Network Scan Results:</strong> 247 devices discovered, all connections secure. Demo network scan completed successfully.';
+        }
+        
+        function optimizeBandwidth() {
+            const usage = (Math.random() * 0.8 + 0.8).toFixed(1);
+            document.getElementById('bandwidthUsage').textContent = usage + 'GB';
+            alert('Bandwidth optimized! (Demo simulation)');
+        }
+        
+        function updateThreats() {
+            alert('Threat intelligence feed updated!\n\nLatest threats analyzed and countermeasures deployed.\n\n(Demo simulation)');
+        }
+        
+        function analyzeThreats() {
+            alert('Threat Analysis Complete:\n\n• No immediate threats detected\n• System security level: High\n• Recommendations: Continue monitoring\n\n(Demo analysis)');
+        }
+        
+        function auditCompliance() {
+            document.getElementById('complianceDisplay').innerHTML = 
+                '<strong>Audit Complete:</strong> All compliance requirements verified. Security policies up to date. Demo audit completed successfully.';
+        }
+        
+        function generateComplianceReport() {
+            alert('Compliance Report Generated:\n\n• GDPR: Fully Compliant\n• ISO 27001: 98% Compliant\n• SOX: Fully Compliant\n• HIPAA: N/A\n\n(Demo compliance report)');
+        }
+        
+        // Initialize demo
+        console.log('Demo Website Initialized');
+        console.log('This is a demonstration of modern web design principles');
+        console.log('All functionality is simulated for demo purposes');
+        
+        // Auto-update demo values
+        setInterval(() => {
+            const connections = 200 + Math.floor(Math.random() * 100);
+            document.getElementById('activeConnections').textContent = connections;
+        }, 5000);
+    </script>
+</body>
+</html>
