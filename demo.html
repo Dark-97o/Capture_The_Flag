@@ -110,12 +110,14 @@
             justify-content: space-between;
             align-items: center;
             padding: 0 20px;
+            gap: 20px;
         }
 
         .logo {
             display: flex;
             align-items: center;
             gap: 15px;
+            flex-shrink: 0;
         }
 
         .demo-logo {
@@ -138,11 +140,45 @@
             color: #ffffff;
         }
 
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            justify-content: center;
+            max-width: 400px;
+        }
+
+        .url-input {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 25px;
+            color: #ffffff;
+            padding: 12px 20px;
+            font-family: inherit;
+            font-size: 14px;
+            width: 100%;
+            max-width: 300px;
+            outline: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .url-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .url-input:focus {
+            border-color: #22c55e;
+            background: rgba(0, 0, 0, 0.3);
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+        }
+
         .nav-btn {
             background: linear-gradient(45deg, #22c55e, #16a34a);
             border: none;
             color: #ffffff;
-            padding: 10px 20px;
+            padding: 12px 20px;
             border-radius: 25px;
             cursor: pointer;
             font-family: inherit;
@@ -150,6 +186,7 @@
             transition: all 0.3s ease;
             text-decoration: none;
             display: inline-block;
+            white-space: nowrap;
         }
 
         .nav-btn:hover {
@@ -343,6 +380,11 @@
                 gap: 15px;
             }
             
+            .nav-controls {
+                max-width: none;
+                width: 100%;
+            }
+            
             .header h1 {
                 font-size: 2rem;
             }
@@ -376,11 +418,11 @@
                 <span class="logo-text">Cybersecurity Dashboard Demo</span>
             </div>
             <div class="nav-controls">
-                <input type="url" class="url-input" id="urlInput" placeholder="Enter URL...">
+                <input type="url" class="url-input" id="urlInput" placeholder="Enter URL to navigate...">
                 <button class="nav-btn" onclick="navigateToUrl()">Navigate</button>
             </div>
             <div>
-                <button class="nav-btn" onclick="showInfo()">About This Demo</button
+                <button class="nav-btn" onclick="showInfo()">About This Demo</button>
             </div>
         </div>
     </nav>
@@ -535,6 +577,52 @@
         function showInfo() {
             alert('This is a demonstration website showcasing modern cybersecurity dashboard design. All functions are simulated for demo purposes only.');
         }
+        
+        function navigateToUrl() {
+            const urlInput = document.getElementById('urlInput');
+            const url = urlInput.value.trim();
+            
+            if (!url) {
+                alert('Please enter a URL to navigate to.');
+                return;
+            }
+            
+            // Basic URL validation
+            try {
+                let validUrl;
+                if (url.startsWith('http://') || url.startsWith('https://')) {
+                    validUrl = new URL(url);
+                } else {
+                    // Add https:// if no protocol specified
+                    validUrl = new URL('https://' + url);
+                }
+                
+                // Confirm navigation
+                const confirmNav = confirm(`Navigate to: ${validUrl.href}\n\nNote: This will leave the demo website.`);
+                
+                if (confirmNav) {
+                    // Open in new tab for safety
+                    window.open(validUrl.href, '_blank');
+                    
+                    // Clear the input
+                    urlInput.value = '';
+                    
+                    // Show success message
+                    setTimeout(() => {
+                        alert('URL opened in new tab! You can continue using this demo.');
+                    }, 500);
+                }
+            } catch (error) {
+                alert('Invalid URL format. Please enter a valid URL (e.g., google.com or https://example.com)');
+            }
+        }
+        
+        // Allow Enter key to trigger navigation
+        document.getElementById('urlInput').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                navigateToUrl();
+            }
+        });
         
         function updateSecurityStatus() {
             const statuses = [
